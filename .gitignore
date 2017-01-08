@@ -1,5 +1,2 @@
 *.h5
-*_hitsTriggered.txt
-*_hitsTriggeredXYZ.txt
-*_tracks.txt
-
+*.h5*.txt

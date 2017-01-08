@@ -25,7 +25,7 @@ f.close()
 
 hitsPlain = pd.read_hdf(filename, 'hits')
 hits = np.array(hitsPlain)
-# f = open(filename+"_hits.txt", 'w')
+f = open(filename+"_hits.txt", 'w')
 fTrig = open(filename+"_hitsTriggered.txt", 'w')
 for hit in hits:
 	# f.write(str(hit[7]) + " " + str(hit[0]) + " " + str(hit[1]) + " " + str(hit[4]) + " " + str(hit[6]) + "\n")
@@ -33,10 +33,10 @@ for hit in hits:
 
 	# write event_id dom_id channel_id time
 	infoString = str(hit[7]) + s + str(hit[1]) + s + str(hit[0]) + s + str(hit[4]) + "\n"
-	# f.write(infoString)
+	f.write(infoString)
 	# extract all triggered hits only:
 	if (hit[6] == True):
 		fTrig.write(infoString)
-# f.close()
+f.close()
 fTrig.close()
 

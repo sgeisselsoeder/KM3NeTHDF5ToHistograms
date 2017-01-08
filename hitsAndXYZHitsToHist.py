@@ -3,21 +3,23 @@ import numpy as np
 import sys
 
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
-	print "Usage: python " + str(sys.argv[0]) + " file.h5.txt"
+	print "Usage: python " + str(sys.argv[0]) + " file.h5"
+	# print "Usage: python " + str(sys.argv[0]) + " file.h5.txt"
 	# print "Usage: python " + str(sys.argv[0]) + " file.h5_tracks.txt"
 	sys.exit(1)
 
 filenameBase = str(sys.argv[1])
 print filenameBase
 filenameTracks = filenameBase + "_tracks.txt"
-filenameHits = filenameBase + "_hitsTriggered.txt"
+filenameHits = filenameBase + "_hits.txt"
+filenameHitsTriggered = filenameBase + "_hitsTriggered.txt"
 
 # the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
 s = " "	# s = "\t" s = ", "
 
 geoFile = open("km3GeoOm.txt", 'r')
 geo = geoFile.read()
-# print geo
+print geo
 
 trackFile = open(filenameTracks, 'r')
 tracksPlain = trackFile.read()
@@ -39,4 +41,20 @@ for track in tracks:
 		f.write(str(track[1]) + s + str(track[2]) + s + str(track[3]) + s + str(track[4]) + "\n")
 f.close()
 """
+
+
+hitTriggeredFile = open(filenameHits, 'r')
+hitsTriggeredPlain = hitTriggeredFile.read()
+hitsTriggered = np.array(hitsTriggeredPlain)
+
+
+
+
+
+
+
+
+trackFile.close()
+hitFile.close()
+hitTriggeredFile.close()
 
