@@ -5,6 +5,9 @@ import json
 import pickle
 
 def singleStringTo2dNumpyArray(dataAsSingleString):
+	# the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
+	s = " "	# s = "\t" s = ", "
+
 	# print dataAsSingleString
 	dataAsList = dataAsSingleString.split("\n")
 	numEntries = len(dataAsList)-1
@@ -12,10 +15,11 @@ def singleStringTo2dNumpyArray(dataAsSingleString):
 	# print dataAsList
 	dataAsListList = dataAsList[0:numEntries]       # TODO investigate why the last entry of the read in list is empty
 	for i in range(0,numEntries):
-		dataAsListList[i] = dataAsList[i].split(" ")
+		dataAsListList[i] = dataAsList[i].split(s)
 	# print dataAsListList
 
 	dataAsNpArray = np.array(dataAsListList)
+	# dataAsNpArray = np.array(dataAsListList, dtype=np.float32)
 	# print dataAsNpArray
 	# print dataAsNpArray.size
 	# print dataAsNpArray.shape
@@ -35,54 +39,65 @@ filenameTracks = filenameBase + "_tracks.txt"
 filenameHits = filenameBase + "_hits.txt"
 filenameHitsTriggered = filenameBase + "_hitsTriggered.txt"
 filenameGeometry = "km3GeoOm.txt"
-# the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
-s = " "	# s = "\t" s = ", "
 
-
+# read in the geometry
 geoFile = open(filenameGeometry, 'r')
 geoPlain = geoFile.read()
 geoFile.close()
+# parse the read data to a numpy array
 geo = singleStringTo2dNumpyArray(geoPlain)
-# print geo
+# print geo[0:5,:]
+# extract the relevant information from the geometry
+domIDs = geo[:,0]
+# print dom_ids
+numberOfDomIDs = len(set(domIDs))
+# print "numberOfDomIDs = " + str(numberOfDomIDs)
 
-for position in geo:
-	print "Position is " + str(position) + "\n"
-print geo.shape
-dom_ids = geo[0]
-print dom_ids
-number_of_dom_ids = len(set(dom_ids))
-print number_of_dom_ids
-
-"""
+# read in all tracks
 trackFile = open(filenameTracks, 'r')
 tracksPlain = trackFile.read()
 trackFile.close()
-tracks = np.array(tracksPlain)
-"""
+# parse the read data to a numpy array
+tracks = singleStringTo2dNumpyArray(tracksPlain)
+# print tracks[0:5,:]
+# extract the relevant information from the tracks
+zenith = np.array(tracks[:,2], np.float32)
+# print zenith[0:5]
 
+# read in all hits for all events
 hitTriggeredFile = open(filenameHitsTriggered, 'r')
-hitsTriggeredPlain = hitTriggeredFile.read() # TODO investigate why the last entry of the read in list is empty
+hitsPlain = hitTriggeredFile.read() # TODO investigate why the last entry of the read in list is empty
 hitTriggeredFile.close()
-hitsTriggered = singleStringTo2dNumpyArray(hitsTriggeredPlain)
-
-# print hitsTriggeredPlain
-hitsAsList = hitsTriggeredPlain.split("\n")
-numEntries = len(hitsAsList)-1
-
-# print hitsAsList
-hitsAsListList = hitsAsList[0:numEntries]	# TODO investigate why the last entry of the read in list is empty
-for i in range(0,numEntries):
-	hitsAsListList[i] = hitsAsList[i].split(" ")
-# print hitsAsListList
-
-hitsTriggered = np.array(hitsAsListList)
-# print hitsTriggered.size
-# print hitsTriggered.shape
-# print hitsTriggered
-# print hitsTriggered[:,2]
-print hitsTriggered[0:5,:]
-
+# parse the read data to a numpy array
+hits = singleStringTo2dNumpyArray(hitsPlain)
+print hits[0:35,:]
 # assuming the format to be: event_id dom_id channel_id time
+
+#TODO: evaluate each event separately
+
+# currentID = hits[0,0]
+currentID = '1'
+print currentID
+currentHitRows = np.where(hits[:,0] == currentID)[0]
+print "... found " + str(len(currentHitRows)) + " hits for index " + str(currentID)
+print currentHitRows
+print currentHitRows[2]
+currentHits = hits[currentHitRows]
+print currentHits
+# omg, I'm a genius ...
+# ok, ... not
+# but hey that's cool
+
+
+
+times = np.array(hits[:,3], np.int32)
+# print times[0:20]
+# print "minimum = " + str(np.amin(times))
+# print "maximum = " + str(np.amax(times))
+timesRelative = times - np.amin(times)
+# print timesRelative[0:20]
+
+# print "minimum = " + str(np.amin(hitsTriggered, dtype=np.float32))
 
 # np.histogram2d()
 
