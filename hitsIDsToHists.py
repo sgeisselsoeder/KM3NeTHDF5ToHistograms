@@ -75,18 +75,24 @@ print hits[0:35,:]
 
 #TODO: evaluate each event separately
 
-# currentID = hits[0,0]
-currentID = '1'
-print currentID
-currentHitRows = np.where(hits[:,0] == currentID)[0]
-print "... found " + str(len(currentHitRows)) + " hits for index " + str(currentID)
-print currentHitRows
-print currentHitRows[2]
-currentHits = hits[currentHitRows]
-print currentHits
-# omg, I'm a genius ...
-# ok, ... not
-# but hey that's cool
+for i in range(0,len(set(hits[:,0]))):
+	currentID = hits[i,0]
+	# currentID = '1'
+	# print currentID
+	currentHitRows = np.where(hits[:,0] == currentID)[0]
+	print "... found " + str(len(currentHitRows)) + " hits for index " + str(currentID)
+	# print currentHitRows
+	# print currentHitRows[2]
+	currentHits = hits[currentHitRows]
+	print currentHits
+
+	#TODO create a histogram for this event
+
+	histFile = open(filenameTracks+"_"+str(i).hist+"OMvsT.hist", 'w')
+	
+	#TODO get out the histogram for this event
+
+	histFile.close()
 
 
 
