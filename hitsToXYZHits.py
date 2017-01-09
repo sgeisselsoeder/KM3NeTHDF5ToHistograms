@@ -8,7 +8,7 @@ if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 	sys.exit(1)
 
 filenameBase = str(sys.argv[1])
-print filenameBase
+print "Converting hit files based on IDs to XYZ-based. Processing files for " + filenameBase
 filenameHits = filenameBase + "_hits.txt"
 filenameHitsTriggered = filenameBase + "_hitsTriggered.txt"
 
@@ -34,3 +34,4 @@ for hit in hits:
 	f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
 f.close()
 
+print "Done."

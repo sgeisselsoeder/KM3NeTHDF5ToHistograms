@@ -7,7 +7,7 @@ if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 	sys.exit(1)
 
 filename = str(sys.argv[1])
-print filename
+print "Extracting hits and tracks from hdf5 file " + filename
 
 # the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
 s = " "	# s = "\t" s = ", "
@@ -18,7 +18,7 @@ tracks = np.array(tracksPlain)
 f = open(filename+"_tracks.txt", 'w')
 for track in tracks:
 	# only for primary particles, bjorkeny != 0:
-	if track[0] != 0.0:
+	if track[0] != 0.0: # TODO: maybe this just compares to the first character (track might be a string, track[0] a character) and is useless this way!
 		# write dir_x dir_y dir_z energy (for the moment)
 		f.write(str(track[1]) + s + str(track[2]) + s + str(track[3]) + s + str(track[4]) + "\n")
 f.close()
@@ -31,7 +31,7 @@ for hit in hits:
 	# f.write(str(hit[7]) + " " + str(hit[0]) + " " + str(hit[1]) + " " + str(hit[4]) + " " + str(hit[6]) + "\n")
 	# f.write(str(hit[7]) + s + str(hit[0]) + s + str(hit[1]) + s + str(hit[4]) + "\n")
 
-	# write event_id dom_id channel_id time
+	# write: event_id dom_id channel_id time
 	infoString = str(hit[7]) + s + str(hit[1]) + s + str(hit[0]) + s + str(hit[4]) + "\n"
 	f.write(infoString)
 	# extract all triggered hits only:
@@ -40,3 +40,4 @@ for hit in hits:
 f.close()
 fTrig.close()
 
+print "Done."
