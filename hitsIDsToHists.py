@@ -29,8 +29,6 @@ def singleStringTo2dNumpyArray(dataAsSingleString):
 
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 	print "Usage: python " + str(sys.argv[0]) + " file.h5"
-	# print "Usage: python " + str(sys.argv[0]) + " file.h5.txt"
-	# print "Usage: python " + str(sys.argv[0]) + " file.h5_tracks.txt"
 	sys.exit(1)
 
 filenameBase = str(sys.argv[1])
@@ -76,20 +74,17 @@ print hits[0:5,:]
 numberBinsT = 100
 numberBinsID = numberOfDomIDs
 
-numberBinsT = 10
-numberBinsID = 10
-
 # evaluate each event separately
 allEventNumbers = set(hits[:,0])	# TODO: use the set of tracks to also include events that did not produce any hits(?)
 # for eventID in allEventNumbers:
 for e in (0,1):
 	eventID = str(e)
 	# evaluate one event
-	print eventID
+	# print eventID
 	
 	# filter all hits belonging to this event
 	currentHitRows = np.where(hits[:,0] == eventID)[0]
-	print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
+	# print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
 	# print currentHitRows
 	curHits = hits[currentHitRows]
 	# print curHits
@@ -122,7 +117,7 @@ for e in (0,1):
 	# alternative: consider a fixed time window around the mean time of the hits
 	# this probably aids the comparison between events
 	meanTime = np.mean(times)
-	print meanTime
+	# print meanTime
 	timeWindow = 2000	# the time window to consider hits, before and after the mean time of the hits. 
 				# A particle should have traversed a km^3 detector in about 4000ns, the light might be around a bit longer (prob. up to 7000)
 				# Usig a fixed number of bins, a smaller time window gives a finer resolution
@@ -131,21 +126,37 @@ for e in (0,1):
 	consideredEnd = meanTime + timeWindow
 	
 	ids = np.array(curHits[:,1], np.int32)
-	print ids
+	# print ids
 	timesRelative = times - consideredStart
-	print timesRelative
+	# print timesRelative
 	
 	# create a histogram for this event
 	histIDvsT = np.histogram2d(timesRelative, ids, [numberBinsT, numberBinsID])
 	# histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
-	print histIDvsT
-	
-	# open the file to store this histogram
-	# histFile = open(filenameTracks+"_event"+str(eventID)+"_TvsOMID.hist", 'w')
-	# write out the histogram for this event
-	# np.savetxt(histFile, histIDvsT)
+	# print histIDvsT[0]
+	# print histIDvsT[0].shape	
+	# maximalValueThisHist = np.amax(histIDvsT[0])
+	# print maximalValueThisHist
 
-	# histFile.close()
+	# store the histogram to file
+	histFilename = "hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
+	histFile = open(histFilename, 'w')
+	# write a valid header for a pgm image file
+	# histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n"+str(int(maximalValueThisHist))+"\n")
+	histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n1\n")
+	
+	# binarize the histogram for the moment to only keep the information: OM hit at that time or not
+	for row in histIDvsT[0]:
+		for entry in row:
+			if entry >= 1: 
+				histFile.write("1 ")
+			else:
+				histFile.write("0 ")		
+		histFile.write("\n")
+
+	# np.savetxt(histFile, histIDvsT[0], fmt='%1i')
+
+	histFile.close()
 
 # print "minimum = " + str(np.amin(hitsTriggered, dtype=np.float32))
 
