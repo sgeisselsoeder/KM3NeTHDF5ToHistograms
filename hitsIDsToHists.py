@@ -70,42 +70,85 @@ hitsPlain = hitTriggeredFile.read() # TODO investigate why the last entry of the
 hitTriggeredFile.close()
 # parse the read data to a numpy array
 hits = singleStringTo2dNumpyArray(hitsPlain)
-print hits[0:35,:]
+print hits[0:5,:]
 # assuming the format to be: event_id dom_id channel_id time
 
-#TODO: evaluate each event separately
+numberBinsT = 100
+numberBinsID = numberOfDomIDs
 
-for i in range(0,len(set(hits[:,0]))):
-	currentID = hits[i,0]
-	# currentID = '1'
-	# print currentID
-	currentHitRows = np.where(hits[:,0] == currentID)[0]
-	print "... found " + str(len(currentHitRows)) + " hits for index " + str(currentID)
-	# print currentHitRows
-	# print currentHitRows[2]
-	currentHits = hits[currentHitRows]
-	print currentHits
+numberBinsT = 10
+numberBinsID = 10
 
-	#TODO create a histogram for this event
-
-	histFile = open(filenameTracks+"_"+str(i).hist+"OMvsT.hist", 'w')
+# evaluate each event separately
+allEventNumbers = set(hits[:,0])	# TODO: use the set of tracks to also include events that did not produce any hits(?)
+# for eventID in allEventNumbers:
+for e in (0,1):
+	eventID = str(e)
+	# evaluate one event
+	print eventID
 	
-	#TODO get out the histogram for this event
+	# filter all hits belonging to this event
+	currentHitRows = np.where(hits[:,0] == eventID)[0]
+	print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
+	# print currentHitRows
+	curHits = hits[currentHitRows]
+	# print curHits
+	
+	# slice out the times of the current hits
+	times = np.array(curHits[:,3], np.int32)
+	# print times[0:20]
 
-	histFile.close()
+	"""
+	# Remove outliers and only consider hits close to the mean time for this event
+	sortedTimes = sorted(times)
+	print sortedTimes
+	percentage = 0.2	# use the fraction to determine what is still considered the inner (main / certainly relevant) part of the event
+	startXp = int(len(sortedTimes)*percentage)
+	end1mXp = int(len(sortedTimes)*(1.0-percentage))
+	#print startXp
+	#print end1mXp
+	innerStart = sortedTimes[startXp]
+	innerEnd = sortedTimes[end1mXp]
+	print "innerStart = " + str(innerStart)
+	print "innerEnd = " + str(innerEnd)
 
+	# extend the considered time window beyond the inner part to include the beginning and end of the event, but no wiered outliers
+	additionalTimeFactor = 1.0	# 1.0 means 100% additional time is considered around the core, 50% before, 50% after
+	consideredDuration = innerEnd - innerStart
+	consideredStart = innerStart - 0.5*additionalTimeFactor*consideredDuration
+	consideredEnd = innerEnd + 0.5*additionalTimeFactor*consideredDuration
+	"""
 
+	# alternative: consider a fixed time window around the mean time of the hits
+	# this probably aids the comparison between events
+	meanTime = np.mean(times)
+	print meanTime
+	timeWindow = 2000	# the time window to consider hits, before and after the mean time of the hits. 
+				# A particle should have traversed a km^3 detector in about 4000ns, the light might be around a bit longer (prob. up to 7000)
+				# Usig a fixed number of bins, a smaller time window gives a finer resolution
 
-times = np.array(hits[:,3], np.int32)
-# print times[0:20]
-# print "minimum = " + str(np.amin(times))
-# print "maximum = " + str(np.amax(times))
-timesRelative = times - np.amin(times)
-# print timesRelative[0:20]
+	consideredStart = meanTime - timeWindow
+	consideredEnd = meanTime + timeWindow
+	
+	ids = np.array(curHits[:,1], np.int32)
+	print ids
+	timesRelative = times - consideredStart
+	print timesRelative
+	
+	# create a histogram for this event
+	histIDvsT = np.histogram2d(timesRelative, ids, [numberBinsT, numberBinsID])
+	# histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
+	print histIDvsT
+	
+	# open the file to store this histogram
+	# histFile = open(filenameTracks+"_event"+str(eventID)+"_TvsOMID.hist", 'w')
+	# write out the histogram for this event
+	# np.savetxt(histFile, histIDvsT)
+
+	# histFile.close()
 
 # print "minimum = " + str(np.amin(hitsTriggered, dtype=np.float32))
 
-# np.histogram2d()
 
 
 
