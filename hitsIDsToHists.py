@@ -4,27 +4,55 @@ import sys
 import json
 import pickle
 
+
 def singleStringTo2dNumpyArray(dataAsSingleString):
 	# the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
 	s = " "	# s = "\t" s = ", "
 
-	# print dataAsSingleString
 	dataAsList = dataAsSingleString.split("\n")
 	numEntries = len(dataAsList)-1
 
-	# print dataAsList
 	dataAsListList = dataAsList[0:numEntries]       # TODO investigate why the last entry of the read in list is empty
 	for i in range(0,numEntries):
 		dataAsListList[i] = dataAsList[i].split(s)
-	# print dataAsListList
 
 	dataAsNpArray = np.array(dataAsListList)
 	# dataAsNpArray = np.array(dataAsListList, dtype=np.float32)
-	# print dataAsNpArray
-	# print dataAsNpArray.size
-	# print dataAsNpArray.shape
-	# print dataAsNpArray[:,1]
 	return dataAsNpArray
+
+def readNumpyArrayFromFile(filename):
+	# open the file
+	fileToRead = open(filename, 'r')
+	# read the contents
+	dataPlain = fileToRead.read()
+	fileToRead.close()
+	# parse the read data to a numpy array
+	return singleStringTo2dNumpyArray(dataPlain)
+
+def storeHistogramAsPGM(hist, filename):
+	histFile = open(filename, 'w')
+	# write a valid header for a pgm image file
+	# maximalValueThisHist = np.amax(hist[0])
+	maximalValueThisHist = 2
+	histFile.write("P2\n"+str(hist[0].shape[1])+" "+str(hist[0].shape[0])+"\n"+str(int(maximalValueThisHist))+"\n")
+	# write the actual data
+	for row in histIDvsT[0]:
+		for entry in row:
+			# write the actual values
+			histFile.write(str(int(entry)) + " ")
+			"""
+			# or binarize the histogram 
+			# Advantage: the simulation of number of PMTs could be off. this is ignore by this
+			# disadvantage: only keeps the information: OM hit at that time or not
+			if entry >= 1: 
+				histFile.write("255 ")
+			else:
+				histFile.write("50 ")
+			"""
+		histFile.write("\n")
+	histFile.close()
+
+
 
 
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
@@ -37,68 +65,53 @@ filenameTracks = filenameBase + "_tracks.txt"
 filenameHits = filenameBase + "_hits.txt"
 filenameHitsTriggered = filenameBase + "_hitsTriggered.txt"
 filenameGeometry = "km3GeoOm.txt"
+manuallySetNumberOfBinsInTime = 100
 
 # read in the geometry
-geoFile = open(filenameGeometry, 'r')
-geoPlain = geoFile.read()
-geoFile.close()
-# parse the read data to a numpy array
-geo = singleStringTo2dNumpyArray(geoPlain)
-# print geo[0:5,:]
-# extract the relevant information from the geometry
+geo = readNumpyArrayFromFile(filenameGeometry)
 domIDs = geo[:,0]
-# print dom_ids
 numberOfDomIDs = len(set(domIDs))
-# print "numberOfDomIDs = " + str(numberOfDomIDs)
 
-# read in all tracks
-trackFile = open(filenameTracks, 'r')
-tracksPlain = trackFile.read()
-trackFile.close()
-# parse the read data to a numpy array
-tracks = singleStringTo2dNumpyArray(tracksPlain)
-# print tracks[0:5,:]
-# extract the relevant information from the tracks
-zenith = np.array(tracks[:,2], np.float32)
-# print zenith[0:5]
+numberBinsT = manuallySetNumberOfBinsInTime
+numberBinsID = numberOfDomIDs
 
-"""
-# read in all triggered hits for all events
-hitTriggeredFile = open(filenameHitsTriggered, 'r')
-hitsPlain = hitTriggeredFile.read() # TODO investigate why the last entry of the read in list is empty
-hitTriggeredFile.close()
-"""
+# read in the tracks for all events
+tracks = readNumpyArrayFromFile(filenameTracks)
+zeniths = np.array(tracks[:,2], np.float32)
+print tracks[0:5]
 
 # read in all hits for all events
-hitFile = open(filenameHits, 'r')
-hitsPlain = hitFile.read() # TODO investigate why the last entry of the read in list is empty
-hitFile.close()
-# parse the read data to a numpy array
-hits = singleStringTo2dNumpyArray(hitsPlain)
-# print hits[0:5,:]
+hits = readNumpyArrayFromFile(filenameHits)
 # assuming the format to be: event_id dom_id channel_id time
-
-numberBinsT = 100
-numberBinsID = numberOfDomIDs
 
 # evaluate each event separately
 allEventNumbers = set(hits[:,0])	# TODO: use the set of tracks to also include events that did not produce any hits(?)
 for eventID in allEventNumbers:
-# for e in (0,1):
-	# eventID = str(e)
 	# evaluate one event
-	# print eventID
 	
 	# filter all hits belonging to this event
 	currentHitRows = np.where(hits[:,0] == eventID)[0]
 	print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
-	# print currentHitRows
 	curHits = hits[currentHitRows]
-	# print curHits
 	
 	# slice out the times of the current hits
 	times = np.array(curHits[:,3], np.int32)
-	# print times[0:20]
+	timeOfFirstHit = np.amin(times)
+	timesRelative = times - timeOfFirstHit
+	# slice out the OM ids of the current hits
+	ids = np.array(curHits[:,1], np.int32)
+
+	# create a histogram for this event
+	histIDvsT = np.histogram2d(timesRelative, ids, [numberBinsT, numberBinsID])
+	# histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
+
+	# store the histogram to file
+	histFilename = "results/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
+	storeHistogramAsPGM(histIDvsT, histFilename) 
+
+
+
+
 
 	"""
 	# Remove outliers and only consider hits close to the mean time for this event
@@ -121,6 +134,7 @@ for eventID in allEventNumbers:
 	consideredEnd = innerEnd + 0.5*additionalTimeFactor*consideredDuration
 	"""
 
+	"""
 	# alternative: consider a fixed time window around the mean time of the hits
 	# this probably aids the comparison between events
 	meanTime = np.mean(times)
@@ -131,47 +145,8 @@ for eventID in allEventNumbers:
 
 	consideredStart = meanTime - timeWindow
 	consideredEnd = meanTime + timeWindow
-	
-	ids = np.array(curHits[:,1], np.int32)
-	# print ids
 	timesRelative = times - consideredStart
-	# print timesRelative
-	
-	# create a histogram for this event
-	histIDvsT = np.histogram2d(timesRelative, ids, [numberBinsT, numberBinsID])
-	# histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
-	# print histIDvsT[0]
-	# print histIDvsT[0].shape	
-	maximalValueThisHist = np.amax(histIDvsT[0])
-	print "maximum number of hits on one OM in one timebin = " + str(int(maximalValueThisHist))
-
-	# store the histogram to file
-	histFilename = "results/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
-	histFile = open(histFilename, 'w')
-	# write a valid header for a pgm image file
-	# histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n"+str(int(maximalValueThisHist))+"\n")
-	histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n5\n")
-	
-	for row in histIDvsT[0]:
-		for entry in row:
-			# write the actual values
-			histFile.write(str(int(entry)) + " ")
-			# or binarize the histogram 
-			# Advantage: the simulation of number of PMTs could be off. this is ignore by this
-			# disadvantage: only keeps the information: OM hit at that time or not
-			"""
-			if entry >= 1: 
-				histFile.write("255 ")
-			else:
-				histFile.write("50 ")
-			"""
-		histFile.write("\n")
-	# np.savetxt(histFile, histIDvsT[0], fmt='%1i')
-	histFile.close()
-
-
-
-
+	"""
 
 
 
