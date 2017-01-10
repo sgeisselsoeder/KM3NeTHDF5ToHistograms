@@ -134,12 +134,12 @@ for eventID in allEventNumbers:
 	# histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
 
 	# store the histograms to files
-	storeHistogramAsPGM(histXvsT, "results/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.pgm") 
-	storeHistogramAsPGM(histYvsT, "results/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsY.pgm") 
-	storeHistogramAsPGM(histZvsT, "results/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsZ.pgm") 
-	storeHistogramAsPGM(histXvsY, "results/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsY.pgm") 
-	storeHistogramAsPGM(histXvsZ, "results/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsZ.pgm") 
-	storeHistogramAsPGM(histYvsZ, "results/hist_"+filenameTracks+"_event"+str(eventID)+"_YvsZ.pgm") 
+	storeHistogramAsPGM(histXvsT, "results/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.pgm") 
+	storeHistogramAsPGM(histYvsT, "results/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsY.pgm") 
+	storeHistogramAsPGM(histZvsT, "results/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsZ.pgm") 
+	storeHistogramAsPGM(histXvsY, "results/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsY.pgm") 
+	storeHistogramAsPGM(histXvsZ, "results/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsZ.pgm") 
+	storeHistogramAsPGM(histYvsZ, "results/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_YvsZ.pgm") 
 
 
 
