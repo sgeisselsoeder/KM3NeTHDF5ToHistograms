@@ -143,14 +143,14 @@ for eventID in allEventNumbers:
 	# print histIDvsT[0]
 	# print histIDvsT[0].shape	
 	maximalValueThisHist = np.amax(histIDvsT[0])
-	# print maximalValueThisHist
+	print "maximum number of hits on one OM in one timebin = " + str(int(maximalValueThisHist))
 
 	# store the histogram to file
 	histFilename = "results/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
 	histFile = open(histFilename, 'w')
 	# write a valid header for a pgm image file
-	histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n"+str(int(maximalValueThisHist))+"\n")
-	# histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n255\n")
+	# histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n"+str(int(maximalValueThisHist))+"\n")
+	histFile.write("P2\n"+str(numberBinsID)+" "+str(numberBinsT)+"\n5\n")
 	
 	for row in histIDvsT[0]:
 		for entry in row:
