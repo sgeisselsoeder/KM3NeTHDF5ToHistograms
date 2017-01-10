@@ -106,7 +106,7 @@ for eventID in allEventNumbers:
 	# histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
 
 	# store the histogram to file
-	histFilename = "results/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
+	histFilename = "results/omIDt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
 	storeHistogramAsPGM(histIDvsT, histFilename) 
 
 
