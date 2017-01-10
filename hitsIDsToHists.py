@@ -36,7 +36,7 @@ def storeHistogramAsPGM(hist, filename):
 	maximalValueThisHist = 2
 	histFile.write("P2\n"+str(hist[0].shape[1])+" "+str(hist[0].shape[0])+"\n"+str(int(maximalValueThisHist))+"\n")
 	# write the actual data
-	for row in histIDvsT[0]:
+	for row in hist[0]:
 		for entry in row:
 			# write the actual values
 			histFile.write(str(int(entry)) + " ")
