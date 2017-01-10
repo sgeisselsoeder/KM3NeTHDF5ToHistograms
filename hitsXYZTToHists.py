@@ -33,7 +33,7 @@ def storeHistogramAsPGM(hist, filename):
 	histFile = open(filename, 'w')
 	# write a valid header for a pgm image file
 	maximalValueThisHist = np.amax(hist[0])
-	maximalValueThisHist = maximalValueThisHist/2.0
+	# maximalValueThisHist = maximalValueThisHist/2.0
 	# maximalValueThisHist = 2
 	histFile.write("P2\n"+str(hist[0].shape[1])+" "+str(hist[0].shape[0])+"\n"+str(int(maximalValueThisHist))+"\n")
 	# write the actual data
