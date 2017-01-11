@@ -82,7 +82,7 @@ def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase):
 	# print len(hist[0][0])		# y bins
 	# print len(hist[0])		# x bins
 	numberOfTimeBins = len(hist[0][0][0][0])
-	print numberOfTimeBins
+	# print numberOfTimeBins
 	for time in range(0,numberOfTimeBins):
 		histFile = open(filenameBase+str(time)+".hist", 'w')
 		# write the actual data
@@ -140,13 +140,9 @@ print "y from " + str(yMin) + " to " + str(yMax) + " --- distance " + str(yDista
 print "z from " + str(zMin) + " to " + str(zMax) + " --- distance " + str(zDistance)
 
 numberBinsT = manuallySetNumberOfBinsInTime
-numberBinsT = 5
 numberBinsX = manuallySetNumberOfBinsInSpace
-numberBinsX = 2
 numberBinsY = manuallySetNumberOfBinsInSpace
-numberBinsY = 3
 numberBinsZ = manuallySetNumberOfBinsInSpace
-numberBinsZ = 4
 
 # read in the tracks for all events
 tracks = readNumpyArrayFromFile(filenameTracks)
@@ -159,9 +155,9 @@ hits = readNumpyArrayFromFile(filenameHits)
 
 # evaluate each event separately
 allEventNumbers = set(hits[:,0])	# TODO: use the set of tracks to also include events that did not produce any hits(?)
-# for eventID in allEventNumbers:
-for i in (0,2):
-	eventID = str(i)
+for eventID in allEventNumbers:
+# for i in (0,2):
+	# eventID = str(i)
 	# evaluate one event
 	
 	# filter all hits belonging to this event
@@ -174,7 +170,7 @@ for i in (0,2):
 	# print curHits[1:5]
 
 	histXYZT = np.histogramdd(curHits, [numberBinsX, numberBinsY, numberBinsZ, numberBinsT])
-	print histXYZT[0]
+	# print histXYZT[0]
 
 	# store the 4 dimensional histogram to file
 	store4dHistogramAsPlainFile( histXYZT, "results/xyzt/hist_"+filenameTracks+"_event"+str(eventID)+"_XYZT.hist")
