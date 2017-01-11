@@ -77,11 +77,14 @@ def store4dHistogramAsPlainFile(hist, filename):
 	histFile.close()
 
 def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase):
-	numberOfTimeBins = len(hist[0][0][0])
+	# print len(hist[0][0][0][0])	# time bins
+	# print len(hist[0][0][0])	# z bins
+	# print len(hist[0][0])		# y bins
+	# print len(hist[0])		# x bins
+	numberOfTimeBins = len(hist[0][0][0][0])
 	print numberOfTimeBins
 	for time in range(0,numberOfTimeBins):
 		histFile = open(filenameBase+str(time)+".hist", 'w')
-		# write a valid header for a pgm image file
 		# write the actual data
 		for xDim in hist[0]:
 			for yDim in xDim:
@@ -112,8 +115,8 @@ filenameTracks = filenameBase + "_tracks.txt"
 filenameHits = filenameBase + "_hitsXYZ.txt"
 filenameHitsTriggered = filenameBase + "_hitsTriggeredXYZ.txt"
 filenameGeometry = "km3GeoOm.txt"
-manuallySetNumberOfBinsInTime = 10
-manuallySetNumberOfBinsInSpace = 2
+manuallySetNumberOfBinsInTime = 100
+manuallySetNumberOfBinsInSpace = 20
 
 # read in the geometry
 geo = readNumpyArrayFromFile(filenameGeometry)
@@ -137,9 +140,13 @@ print "y from " + str(yMin) + " to " + str(yMax) + " --- distance " + str(yDista
 print "z from " + str(zMin) + " to " + str(zMax) + " --- distance " + str(zDistance)
 
 numberBinsT = manuallySetNumberOfBinsInTime
+numberBinsT = 5
 numberBinsX = manuallySetNumberOfBinsInSpace
+numberBinsX = 2
 numberBinsY = manuallySetNumberOfBinsInSpace
+numberBinsY = 3
 numberBinsZ = manuallySetNumberOfBinsInSpace
+numberBinsZ = 4
 
 # read in the tracks for all events
 tracks = readNumpyArrayFromFile(filenameTracks)
