@@ -173,8 +173,8 @@ for eventID in allEventNumbers:
 	# print histXYZT[0]
 
 	# store the 4 dimensional histogram to file
-	store4dHistogramAsPlainFile( histXYZT, "results/xyzt/hist_"+filenameTracks+"_event"+str(eventID)+"_XYZT.hist")
-	store4dHistogramAsTimeSeriesOf3dHists( histXYZT, "results/xyzTimeSeries/hist_"+filenameTracks+"_event"+str(eventID)+"_XYZ")
+	store4dHistogramAsPlainFile( histXYZT, "results/4dTo4d/xyzt/hist_"+filenameTracks+"_event"+str(eventID)+"_XYZT.hist")
+	store4dHistogramAsTimeSeriesOf3dHists( histXYZT, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameTracks+"_event"+str(eventID)+"_XYZ")
 
 	"""
 	# Remove outliers and only consider hits close to the mean time for this event
