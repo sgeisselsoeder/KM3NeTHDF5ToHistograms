@@ -43,6 +43,15 @@ def store2dHistogramAsPGM(hist, filename):
 		histFile.write("\n")
 	histFile.close()
 
+def store2dHistogramAsPlainFile(hist, filename):
+	histFile = open(filename, 'w')
+	# write the actual data
+	for row in hist[0]:
+		for entry in row:
+			# write the actual values
+			histFile.write(str(int(entry)) + " ")
+	histFile.close()
+
 def store4dHistogramAsPlainFile(hist, filename):
 	histFile = open(filename, 'w')
 	# write the actual data
@@ -79,9 +88,12 @@ filenameTracks = filenameBase + "_tracks.txt"
 filenameHitsXYZT = filenameBase + "_hitsXYZ.txt"
 filenameHitsOMIDT = filenameBase + "_hits.txt"
 filenameGeometry = "km3GeoOm.txt"
-manuallySetNumberOfBinsInTime = 100
-manuallySetNumberOfBinsInSpace = 20
-# manuallySetNumberOfOMs = 2070 # can be hardcoded if it should not be read out of the geometry
+# the number of bins could also be deduced from the geometry
+numberBinsT = 100	# number of bins in time
+numberBinsX = 12	# number of bins in x
+numberBinsY = 12	# number of bins in y
+numberBinsZ = 18	# number of bins in z
+# numberBinsID = 2070
 
 # read in the geometry
 geo = readNumpyArrayFromFile(filenameGeometry)
@@ -111,19 +123,15 @@ print "z from " + str(zMin) + " to " + str(zMax) + " --- distance " + str(zDista
 # tracks = readNumpyArrayFromFile(filenameTracks)
 # zeniths = np.array(tracks[:,2], np.float32)
 
-numberBinsT = manuallySetNumberOfBinsInTime
-numberBinsX = manuallySetNumberOfBinsInSpace
-numberBinsY = manuallySetNumberOfBinsInSpace
-numberBinsZ = manuallySetNumberOfBinsInSpace
-
 
 print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
 
 # read in all hits (OMID vs time format) for all events
 hits = readNumpyArrayFromFile(filenameHitsOMIDT)
-
-# evaluate each event separately
 allEventNumbers = set(hits[:,0])
+
+# """
+# evaluate each event separately
 for eventID in allEventNumbers:
         # evaluate one event at a time
 
@@ -145,16 +153,15 @@ for eventID in allEventNumbers:
         # store the histogram to file
         histFilename = "results/2dTo2d/omIDt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
         store2dHistogramAsPGM(histIDvsT, histFilename)
-
-
+# """
 
 print "Generating histograms from the hits in XYZT format for files based on " + filenameBase
 
 # read in all hits for all events
 hits = readNumpyArrayFromFile(filenameHitsXYZT)
 
+# allEventNumbers = set(hits[:,0]) # not required again
 # evaluate each event separately
-# allEventNumbers = set(hits[:,0]) not required again
 for eventID in allEventNumbers:
         # evaluate one event at a time
 	
@@ -181,12 +188,12 @@ for eventID in allEventNumbers:
         histYvsZ = np.histogram2d(z, y, [numberBinsZ, numberBinsY])
 
         # store the histograms to files
-        storeHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.pgm")
-        storeHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsY.pgm")
-        storeHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsZ.pgm")
-        storeHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsY.pgm")
-        storeHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsZ.pgm")
-        storeHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_YvsZ.pgm")
+        store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.pgm")
+        store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsY.pgm")
+        store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsZ.pgm")
+        store2dHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsY.pgm")
+        store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsZ.pgm")
+        store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_YvsZ.pgm")
 
 
 # do the 4d and 3d time series histograms next
