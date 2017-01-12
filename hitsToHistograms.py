@@ -81,12 +81,13 @@ filenameHitsOMIDT = filenameBase + "_hits.txt"
 filenameGeometry = "km3GeoOm.txt"
 manuallySetNumberOfBinsInTime = 100
 manuallySetNumberOfBinsInSpace = 20
+# manuallySetNumberOfOMs = 2070 # can be hardcoded if it should not be read out of the geometry
 
 # read in the geometry
 geo = readNumpyArrayFromFile(filenameGeometry)
-domIDs = geo[:,0]
-numberOfDomIDs = len(set(domIDs))
-numberBinsID = numberOfDomIDs
+omIDs = geo[:,0]
+numberOfOmIDs = len(set(omIDs))
+numberBinsID = numberOfOmIDs
 """
 xValues = np.array(geo[:,1], np.float32)
 yValues = np.array(geo[:,2], np.float32)
