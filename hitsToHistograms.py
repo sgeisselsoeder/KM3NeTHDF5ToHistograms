@@ -29,8 +29,6 @@ def readNumpyArrayFromFile(filename):
 	# parse the read data to a numpy array
 	return singleStringTo2dNumpyArray(dataPlain)
 
-
-# def storeHistogramAsPGM(hist, filename):
 def store2dHistogramAsPGM(hist, filename):
 	histFile = open(filename, 'w')
 	maximalValueThisHist = np.amax(hist[0])
@@ -53,7 +51,7 @@ def store4dHistogramAsPlainFile(hist, filename):
 			for thirdRow in secondRow:
 				for entry in thirdRow:
 					# write the actual values
-					histFile.write(str(float(entry)) + " ")
+					histFile.write(str(int(entry)) + " ")
 	histFile.close()
 
 def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase):
@@ -67,7 +65,7 @@ def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase):
 				for zDim in yDim:
 					entry = zDim[time]
 					# write the actual value
-					histFile.write(str(float(entry)) + " ")
+					histFile.write(str(int(entry)) + " ")
 		histFile.close()
 
 
@@ -84,10 +82,12 @@ filenameGeometry = "km3GeoOm.txt"
 manuallySetNumberOfBinsInTime = 100
 manuallySetNumberOfBinsInSpace = 20
 
-"""
 # read in the geometry
-# the geometry can be used to automatically derive the number of bins. this is not used for now
 geo = readNumpyArrayFromFile(filenameGeometry)
+domIDs = geo[:,0]
+numberOfDomIDs = len(set(domIDs))
+numberBinsID = numberOfDomIDs
+"""
 xValues = np.array(geo[:,1], np.float32)
 yValues = np.array(geo[:,2], np.float32)
 zValues = np.array(geo[:,3], np.float32)
@@ -189,12 +189,18 @@ for eventID in allEventNumbers:
 
 
 # do the 4d and 3d time series histograms next
+	# this works but produces giant output files and is not required for now
+	"""
 	curHitsWithoutEventID = np.array(curHits[:,1:5], np.float32)
 	histXYZT = np.histogramdd(curHitsWithoutEventID, [numberBinsX, numberBinsY, numberBinsZ, numberBinsT])
 
 	# store the 4 dimensional histogram to file
 	store4dHistogramAsPlainFile( histXYZT, "results/4dTo4d/xyzt/hist_"+filenameTracks+"_event"+str(eventID)+"_XYZT.hist")
 	store4dHistogramAsTimeSeriesOf3dHists( histXYZT, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameTracks+"_event"+str(eventID)+"_XYZ")
+	"""
+
+
+
 
 
 	# this is just some code for ideas how to treat time windows better, but not relevant right now
