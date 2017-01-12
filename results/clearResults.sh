@@ -1,1 +1,2 @@
-for folder in * ; do rm -f $folder/*.pgm $folder/*.hist ; done
+find . -iname "*.pgm" -exec rm {} \;
+find . -iname "*.hist" -exec rm {} \;
