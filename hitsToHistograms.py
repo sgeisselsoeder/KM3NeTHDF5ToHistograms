@@ -86,7 +86,7 @@ manuallySetNumberOfBinsInSpace = 20
 
 """
 # read in the geometry
-# the geometry can be used to automatically derive the number of bins. not used for now
+# the geometry can be used to automatically derive the number of bins. this is not used for now
 geo = readNumpyArrayFromFile(filenameGeometry)
 xValues = np.array(geo[:,1], np.float32)
 yValues = np.array(geo[:,2], np.float32)
@@ -105,14 +105,15 @@ print "y from " + str(yMin) + " to " + str(yMax) + " --- distance " + str(yDista
 print "z from " + str(zMin) + " to " + str(zMax) + " --- distance " + str(zDistance)
 """
 
+# read in the tracks for all events
+# the tracks can be used to determine the class / desired outcome(s) for each event	# BEWARE: they may not end up as "features" !
+# tracks = readNumpyArrayFromFile(filenameTracks)
+# zeniths = np.array(tracks[:,2], np.float32)
+
 numberBinsT = manuallySetNumberOfBinsInTime
 numberBinsX = manuallySetNumberOfBinsInSpace
 numberBinsY = manuallySetNumberOfBinsInSpace
 numberBinsZ = manuallySetNumberOfBinsInSpace
-
-# read in the tracks for all events
-# tracks = readNumpyArrayFromFile(filenameTracks)
-# zeniths = np.array(tracks[:,2], np.float32)
 
 
 print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
