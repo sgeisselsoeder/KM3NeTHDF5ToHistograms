@@ -6,9 +6,6 @@ python h5ToHits.py data.h5
 # extend the hits based on OM ID to XYZ coordinates
 python hitsToXYZHits.py data.h5
 
-# create histograms from the hits resolved for IDs (line, OM, and pot. PMT) and time
-python hitsIDsTo2DHist.py data.h5
+# create the different types of histograms from the hits (OM-IDs and XYZ)
+python hitsToHistograms.py data.h5
 
-# create histograms from the hits, resolved for XYZ and time
-python hitsXYZTTo2DHists.py data.h5
-python hitsXYZTTo4DHist.py data.h5
