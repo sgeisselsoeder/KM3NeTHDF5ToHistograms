@@ -1,4 +1,4 @@
-These scripts extracts the hits and tracks from a given hdf5 file for KM3NeT.
+These scripts extract the hits and tracks from a given hdf5 file for KM3NeT.
 
 The hits are then used to create histograms in various ways:
 - two dimensions: ID of optical module versus time
