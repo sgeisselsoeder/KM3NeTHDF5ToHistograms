@@ -51,6 +51,7 @@ def store2dHistogramAsPlainFile(classValue, hist, filename, delim = " "):
 		for entry in row:
 			# write the actual values
 			histFile.write(str(int(entry)) + delim)
+	histFile.write("\n")
 	histFile.close()
 
 def store4dHistogramAsPlainFile(hist, filename, delim = " "):
@@ -62,6 +63,7 @@ def store4dHistogramAsPlainFile(hist, filename, delim = " "):
 				for entry in thirdRow:
 					# write the actual values
 					histFile.write(str(int(entry)) + delim)
+	histFile.write("\n")
 	histFile.close()
 
 def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase, delim = " "):
@@ -106,7 +108,7 @@ numberBinsID = len(set(omIDs))
 # read in the tracks for all events
 # the tracks can be used to determine the class / desired outcome(s) for each event	# BEWARE: they may not end up as "features" !
 tracks = readNumpyArrayFromFile(filenameTracks)
-print tracks[0]
+# print tracks[0]
 
 
 print "Generating histograms from the hits in XYZT format for files based on " + filenameBase
