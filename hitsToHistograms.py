@@ -150,18 +150,18 @@ for eventID in allEventNumbers:
 
         # store the histograms to files
         store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.pgm")
-        store2dHistogramAsPlainFile(classValue, histXvsT, "results/4dTo2d/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsY.pgm")
-        store2dHistogramAsPlainFile(classValue, histYvsT, "results/4dTo2d/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsZ.pgm")
-        store2dHistogramAsPlainFile(classValue, histZvsT, "results/4dTo2d/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsY.pgm")
-        store2dHistogramAsPlainFile(classValue, histXvsY, "results/4dTo2d/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsZ.pgm")
-        store2dHistogramAsPlainFile(classValue, histXvsZ, "results/4dTo2d/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_YvsZ.pgm")
-        store2dHistogramAsPlainFile(classValue, histYvsT, "results/4dTo2d/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
 
+        store2dHistogramAsPlainFile(classValue, histXvsT, "results/4dTo2d/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
+        store2dHistogramAsPlainFile(classValue, histYvsT, "results/4dTo2d/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsY.hist")
+        store2dHistogramAsPlainFile(classValue, histZvsT, "results/4dTo2d/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsZ.hist")
+        store2dHistogramAsPlainFile(classValue, histXvsY, "results/4dTo2d/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_YvsX.hist")
+        store2dHistogramAsPlainFile(classValue, histXvsZ, "results/4dTo2d/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_ZvsX.hist")
+        store2dHistogramAsPlainFile(classValue, histYvsZ, "results/4dTo2d/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_ZvsY.hist")
 
 # do the 4d and 3d time series histograms next
 	# this works but produces giant output files and is not required for now
