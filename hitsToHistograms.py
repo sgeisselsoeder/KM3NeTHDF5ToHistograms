@@ -177,6 +177,7 @@ for eventID in allEventNumbers:
 	"""
 
 
+"""
 
 print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
 
@@ -184,7 +185,6 @@ print "Generating histograms from the hits in OMID versus time format for files 
 hits = readNumpyArrayFromFile(filenameHitsOMIDT)
 allEventNumbers = set(hits[:,0])
 
-# """
 for eventID in allEventNumbers:
         # evaluate one event at a time
 
@@ -206,6 +206,6 @@ for eventID in allEventNumbers:
         # store the histogram to file
         histFilename = "results/2dTo2d/omIDt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
         store2dHistogramAsPGM(histIDvsT, histFilename)
-# """
+"""
 
 
