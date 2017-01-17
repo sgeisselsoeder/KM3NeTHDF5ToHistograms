@@ -43,16 +43,17 @@ def store2dHistogramAsPGM(hist, filename):
 		histFile.write("\n")
 	histFile.close()
 
-def store2dHistogramAsPlainFile(hist, filename):
+def store2dHistogramAsPlainFile(classValue, hist, filename, delim = " "):
 	histFile = open(filename, 'w')
 	# write the actual data
 	for row in hist[0]:
+		histFile.write(str(int(classValue)) + delim)
 		for entry in row:
 			# write the actual values
-			histFile.write(str(int(entry)) + " ")
+			histFile.write(str(int(entry)) + delim)
 	histFile.close()
 
-def store4dHistogramAsPlainFile(hist, filename):
+def store4dHistogramAsPlainFile(hist, filename, delim = " "):
 	histFile = open(filename, 'w')
 	# write the actual data
 	for row in hist[0]:
@@ -60,10 +61,10 @@ def store4dHistogramAsPlainFile(hist, filename):
 			for thirdRow in secondRow:
 				for entry in thirdRow:
 					# write the actual values
-					histFile.write(str(int(entry)) + " ")
+					histFile.write(str(int(entry)) + delim)
 	histFile.close()
 
-def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase):
+def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase, delim = " "):
 	# len(hist[0][0][0][0])	= time bins 	len(hist[0][0][0]) = z bins  	len(hist[0][0]) = y bins	len(hist[0]) = x bins
 	numberOfTimeBins = len(hist[0][0][0][0])
 	for time in range(0,numberOfTimeBins):
@@ -74,7 +75,7 @@ def store4dHistogramAsTimeSeriesOf3dHists(hist, filenameBase):
 				for zDim in yDim:
 					entry = zDim[time]
 					# write the actual value
-					histFile.write(str(int(entry)) + " ")
+					histFile.write(str(int(entry)) + delim)
 		histFile.close()
 
 
@@ -82,13 +83,15 @@ if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 	print "Usage: python " + str(sys.argv[0]) + " file.h5"
 	sys.exit(1)
 
+
 filenameBase = str(sys.argv[1])
 # print "Generating histograms from the hits in XYZ-format for files based on " + filenameBase
 filenameTracks = filenameBase + "_tracks.txt"
 filenameHitsXYZT = filenameBase + "_hitsXYZ.txt"
 filenameHitsOMIDT = filenameBase + "_hits.txt"
 filenameGeometry = "km3GeoOm.txt"
-# the number of bins could also be deduced from the geometry
+
+# the number of bins could partially also be deduced from the geometry
 numberBinsT = 100	# number of bins in time
 numberBinsX = 12	# number of bins in x
 numberBinsY = 12	# number of bins in y
@@ -100,70 +103,32 @@ geo = readNumpyArrayFromFile(filenameGeometry)
 omIDs = geo[:,0]
 numberOfOmIDs = len(set(omIDs))
 numberBinsID = numberOfOmIDs
-"""
-xValues = np.array(geo[:,1], np.float32)
-yValues = np.array(geo[:,2], np.float32)
-zValues = np.array(geo[:,3], np.float32)
-xMin = np.amin(xValues)
-xMax = np.amax(xValues)
-yMin = np.amin(yValues)
-yMax = np.amax(yValues)
-zMin = np.amin(zValues)
-zMax = np.amax(zValues)
-xDistance = xMax - xMin
-yDistance = yMax - yMin
-zDistance = zMax - zMin
-print "x from " + str(xMin) + " to " + str(xMax) + " --- distance " + str(xDistance)
-print "y from " + str(yMin) + " to " + str(yMax) + " --- distance " + str(yDistance)
-print "z from " + str(zMin) + " to " + str(zMax) + " --- distance " + str(zDistance)
-"""
 
 # read in the tracks for all events
 # the tracks can be used to determine the class / desired outcome(s) for each event	# BEWARE: they may not end up as "features" !
-# tracks = readNumpyArrayFromFile(filenameTracks)
-# zeniths = np.array(tracks[:,2], np.float32)
+tracks = readNumpyArrayFromFile(filenameTracks)
+zeniths = np.array(tracks[:,2], np.float32)
+# just to have a default use case: the class is determined by up/down-going
+classes = np.sign(zeniths)
+classes[classes == -1] = 0
+# print tracks
+print classes
+print classes[0]
 
 
-print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
-
-# read in all hits (OMID vs time format) for all events
-hits = readNumpyArrayFromFile(filenameHitsOMIDT)
-allEventNumbers = set(hits[:,0])
-
-# """
-# evaluate each event separately
-for eventID in allEventNumbers:
-        # evaluate one event at a time
-
-        # filter all hits belonging to this event
-        currentHitRows = np.where(hits[:,0] == eventID)[0]
-        print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
-        curHits = hits[currentHitRows]
-
-        # slice out the OM ids of the current hits
-        ids = np.array(curHits[:,1], np.int32)
-
-        # slice out the times of the current hits
-        times = np.array(curHits[:,3], np.int32)
-
-        # create a histogram for this event
-        histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID])
-        # histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
-
-        # store the histogram to file
-        histFilename = "results/2dTo2d/omIDt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
-        store2dHistogramAsPGM(histIDvsT, histFilename)
-# """
 
 print "Generating histograms from the hits in XYZT format for files based on " + filenameBase
 
 # read in all hits for all events
 hits = readNumpyArrayFromFile(filenameHitsXYZT)
+allEventNumbers = set(hits[:,0])
 
 # allEventNumbers = set(hits[:,0]) # not required again
-# evaluate each event separately
 for eventID in allEventNumbers:
         # evaluate one event at a time
+
+	classValue = classes[int(eventID)]
+	print classValue
 	
 	# filter all hits belonging to this event
 	currentHitRows = np.where(hits[:,0] == eventID)[0]
@@ -189,11 +154,17 @@ for eventID in allEventNumbers:
 
         # store the histograms to files
         store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.pgm")
+        store2dHistogramAsPlainFile(classValue, histXvsT, "results/4dTo2d/xt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsY.pgm")
+        store2dHistogramAsPlainFile(classValue, histYvsT, "results/4dTo2d/yt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsZ.pgm")
+        store2dHistogramAsPlainFile(classValue, histZvsT, "results/4dTo2d/zt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsY.pgm")
+        store2dHistogramAsPlainFile(classValue, histXvsY, "results/4dTo2d/xy/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_XvsZ.pgm")
+        store2dHistogramAsPlainFile(classValue, histXvsZ, "results/4dTo2d/xz/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
         store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_YvsZ.pgm")
+        store2dHistogramAsPlainFile(classValue, histYvsT, "results/4dTo2d/yz/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsX.hist")
 
 
 # do the 4d and 3d time series histograms next
@@ -209,43 +180,34 @@ for eventID in allEventNumbers:
 
 
 
+print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
 
+# read in all hits (OMID vs time format) for all events
+hits = readNumpyArrayFromFile(filenameHitsOMIDT)
+allEventNumbers = set(hits[:,0])
 
-	# this is just some code for ideas how to treat time windows better, but not relevant right now
-	"""
-	# Remove outliers and only consider hits close to the mean time for this event
-	sortedTimes = sorted(times)
-	print sortedTimes
-	percentage = 0.2	# use the fraction to determine what is still considered the inner (main / certainly relevant) part of the event
-	startXp = int(len(sortedTimes)*percentage)
-	end1mXp = int(len(sortedTimes)*(1.0-percentage))
-	#print startXp
-	#print end1mXp
-	innerStart = sortedTimes[startXp]
-	innerEnd = sortedTimes[end1mXp]
-	print "innerStart = " + str(innerStart)
-	print "innerEnd = " + str(innerEnd)
+# """
+for eventID in allEventNumbers:
+        # evaluate one event at a time
 
-	# extend the considered time window beyond the inner part to include the beginning and end of the event, but no wiered outliers
-	additionalTimeFactor = 1.0	# 1.0 means 100% additional time is considered around the core, 50% before, 50% after
-	consideredDuration = innerEnd - innerStart
-	consideredStart = innerStart - 0.5*additionalTimeFactor*consideredDuration
-	consideredEnd = innerEnd + 0.5*additionalTimeFactor*consideredDuration
-	"""
+        # filter all hits belonging to this event
+        currentHitRows = np.where(hits[:,0] == eventID)[0]
+        print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
+        curHits = hits[currentHitRows]
 
-	"""
-	# alternative: consider a fixed time window around the mean time of the hits
-	# this probably aids the comparison between events
-	meanTime = np.mean(times)
-	# print meanTime
-	timeWindow = 2000	# the time window to consider hits, before and after the mean time of the hits. 
-				# A particle should have traversed a km^3 detector in about 4000ns, the light might be around a bit longer (prob. up to 7000)
-				# Usig a fixed number of bins, a smaller time window gives a finer resolution
+        # slice out the OM ids of the current hits
+        ids = np.array(curHits[:,1], np.int32)
 
-	consideredStart = meanTime - timeWindow
-	consideredEnd = meanTime + timeWindow
-	timesRelative = times - consideredStart
-	"""
+        # slice out the times of the current hits
+        times = np.array(curHits[:,3], np.int32)
 
+        # create a histogram for this event
+        histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID])
+        # histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
+
+        # store the histogram to file
+        histFilename = "results/2dTo2d/omIDt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
+        store2dHistogramAsPGM(histIDvsT, histFilename)
+# """
 
 
