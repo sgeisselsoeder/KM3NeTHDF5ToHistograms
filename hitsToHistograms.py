@@ -101,20 +101,12 @@ numberBinsZ = 18	# number of bins in z
 # read in the geometry
 geo = readNumpyArrayFromFile(filenameGeometry)
 omIDs = geo[:,0]
-numberOfOmIDs = len(set(omIDs))
-numberBinsID = numberOfOmIDs
+numberBinsID = len(set(omIDs))
 
 # read in the tracks for all events
 # the tracks can be used to determine the class / desired outcome(s) for each event	# BEWARE: they may not end up as "features" !
 tracks = readNumpyArrayFromFile(filenameTracks)
-zeniths = np.array(tracks[:,2], np.float32)
-# just to have a default use case: the class is determined by up/down-going
-classes = np.sign(zeniths)
-classes[classes == -1] = 0
-# print tracks
-print classes
-print classes[0]
-
+print tracks[0]
 
 
 print "Generating histograms from the hits in XYZT format for files based on " + filenameBase
@@ -127,9 +119,13 @@ allEventNumbers = set(hits[:,0])
 for eventID in allEventNumbers:
         # evaluate one event at a time
 
-	classValue = classes[int(eventID)]
-	print classValue
-	
+	# analyze the track info to determine the class number
+	track = tracks[int(eventID)]
+	zenith = np.float32(track[4])
+	classValue = int(np.sign(zenith))
+	if classValue == -1:
+		classValue = 0
+
 	# filter all hits belonging to this event
 	currentHitRows = np.where(hits[:,0] == eventID)[0]
 	print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
