@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 import sys
-import json
-import pickle
+# import json
+# import pickle
 
 
 def singleStringTo2dNumpyArray(dataAsSingleString):
@@ -100,8 +100,8 @@ filenameGeometry = "km3GeoOm.txt"
 
 # the number of bins could partially also be deduced from the geometry
 numberBinsT = 100	# number of bins in time
-numberBinsX = 10	# number of bins in x
-numberBinsY = 10	# number of bins in y
+numberBinsX = 11	# number of bins in x
+numberBinsY = 11	# number of bins in y
 numberBinsZ = 18	# number of bins in z
 # numberBinsID = 2070
 
