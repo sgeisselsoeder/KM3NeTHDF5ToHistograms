@@ -4,7 +4,7 @@ for f in ../data/km3netHDF5Files/*.h5; do
 	time python hitsToXYZHits.py $f
 	time python hitsToHistograms.py $f
 done
-cd results && time collect.sh ; cd ..
+cd results && time ./collect.sh ; cd ..
 
 ## data.h5 used to be km3_v4_numuCC_100.JTE_r2356.root.h5
 ## dump hdf5 files to ASCII hits
