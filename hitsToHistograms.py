@@ -43,7 +43,7 @@ def store2dHistogramAsPGM(hist, filename):
 		histFile.write("\n")
 	histFile.close()
 
-def store2dHistogramAsPlainFile(hist, classValue, filename, delim = " "):
+def store2dHistogramAsPlainFile(hist, classValue, filename, delim = ","):
 	histFile = open(filename, 'w')
 	# write the class label
 	histFile.write(str(int(classValue)) + delim)
@@ -55,7 +55,7 @@ def store2dHistogramAsPlainFile(hist, classValue, filename, delim = " "):
 	histFile.write("\n")
 	histFile.close()
 
-def store4dHistogramAsPlainFile(hist, classValue, filename, delim = " "):
+def store4dHistogramAsPlainFile(hist, classValue, filename, delim = ","):
 	histFile = open(filename, 'w')
 	# write the class label
 	histFile.write(str(int(classValue)) + delim)
@@ -69,7 +69,20 @@ def store4dHistogramAsPlainFile(hist, classValue, filename, delim = " "):
 	histFile.write("\n")
 	histFile.close()
 
-def store4dHistogramAsTimeSeriesOf3dHists(hist, classValue, filenameBase, delim = " "):
+def store3dHistogramAsPlainFile(hist, classValue, filename, delim = ","):
+	histFile = open(filename, 'w')
+	# write the class label
+	histFile.write(str(int(classValue)) + delim)
+	# write the actual data
+	for row in hist[0]:
+		for secondRow in row:
+			for entry in secondRow:
+				# write the actual values
+				histFile.write(str(int(entry)) + delim)
+	histFile.write("\n")
+	histFile.close()
+
+def store4dHistogramAsTimeSeriesOf3dHists(hist, classValue, filenameBase, delim = ","):
 	# len(hist[0][0][0][0])	= time bins 	len(hist[0][0][0]) = z bins  	len(hist[0][0]) = y bins	len(hist[0]) = x bins
 	numberOfTimeBins = len(hist[0][0][0][0])
 	for time in range(0,numberOfTimeBins):
@@ -164,12 +177,12 @@ for eventID in allEventNumbers:
         histYvsZ = np.histogram2d(z, y, [numberBinsZ, numberBinsY])
 
         # store the histograms to files
-        store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.pgm", delimiter)
-        store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.pgm", delimiter)
-        store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.pgm", delimiter)
-        store2dHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsY.pgm", delimiter)
-        store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsZ.pgm", delimiter)
-        store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsZ.pgm", delimiter)
+        store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.pgm")
+        store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.pgm")
+        store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.pgm")
+        store2dHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsY.pgm")
+        store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsZ.pgm")
+        store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsZ.pgm")
 
         store2dHistogramAsPlainFile(histXvsT, classValue, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.csv", delimiter)
         store2dHistogramAsPlainFile(histYvsT, classValue, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.csv", delimiter)
@@ -177,6 +190,20 @@ for eventID in allEventNumbers:
         store2dHistogramAsPlainFile(histXvsY, classValue, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsX.csv", delimiter)
         store2dHistogramAsPlainFile(histXvsZ, classValue, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsX.csv", delimiter)
         store2dHistogramAsPlainFile(histYvsZ, classValue, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsY.csv", delimiter)
+
+# do the 3d histograms next
+	histXYZ = np.histogramdd( np.array(curHits[:,1:4], np.float32), [numberBinsX, numberBinsY, numberBinsZ])
+	print curHits[:,1:3]
+	print np.concatenate([curHits[:,1:3],curHits[:,4]], axis=1)
+	# histXYT = np.histogramdd( np.array(np.concatenate([curHits[:,1:3],curHits[:,4]]), np.float32), [numberBinsX, numberBinsY, numberBinsT])
+	# histXZT = np.histogramdd( np.array(curHits[:,1]+curHits[:,3:5], np.float32), [numberBinsX, numberBinsZ, numberBinsT])
+	histYZT = np.histogramdd( np.array(curHits[:,2:5], np.float32), [numberBinsY, numberBinsZ, numberBinsT])
+
+	# store the 3 dimensional histograms to file
+	store3dHistogramAsPlainFile( histXYZ, classValue, "results/3dTo3d/xyz/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ.csv", delimiter)
+	store3dHistogramAsPlainFile( histXYT, classValue, "results/3dTo3d/xyt/hist_"+filenameOutput+"_event"+str(eventID)+"_XYT.csv", delimiter)
+	store3dHistogramAsPlainFile( histXZT, classValue, "results/3dTo3d/xzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XZT.csv", delimiter)
+	store3dHistogramAsPlainFile( histYZT, classValue, "results/3dTo3d/yzt/hist_"+filenameOutput+"_event"+str(eventID)+"_YZT.csv", delimiter)
 
 # do the 4d and 3d time series histograms next
 	# this works but produces giant output files and is not required for now
@@ -187,7 +214,6 @@ for eventID in allEventNumbers:
 	# store the 4 dimensional histogram to file
 	store4dHistogramAsPlainFile( histXYZT, classValue, "results/4dTo4d/xyzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZT.csv", delimiter)
 	# store4dHistogramAsTimeSeriesOf3dHists( histXYZT, classValue, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ", delimiter)
-	# TODO: store4dHistogramsAs3dProjections()
 	"""
 
 
