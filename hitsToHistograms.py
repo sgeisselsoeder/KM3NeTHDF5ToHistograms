@@ -156,7 +156,7 @@ for eventID in allEventNumbers:
 
 	# filter all hits belonging to this event
 	currentHitRows = np.where(hits[:,0] == eventID)[0]
-	print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
+	# print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
 	curHits = hits[currentHitRows]
 	
 # do the 2d histograms first
