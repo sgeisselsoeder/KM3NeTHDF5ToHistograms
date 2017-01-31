@@ -158,7 +158,8 @@ for eventID in allEventNumbers:
 	currentHitRows = np.where(hits[:,0] == eventID)[0]
 	print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
 	curHits = hits[currentHitRows]
-
+	
+	"""
 # do the 2d histograms first
 
 	# slice out the times of the current hits
@@ -167,7 +168,7 @@ for eventID in allEventNumbers:
         x = np.array(curHits[:,1], np.float32)
         y = np.array(curHits[:,2], np.float32)
         z = np.array(curHits[:,3], np.float32)
-
+	
         # create histograms for this event
         histXvsT = np.histogram2d(times, x, [numberBinsT, numberBinsX])
         histYvsT = np.histogram2d(times, y, [numberBinsT, numberBinsY])
@@ -190,19 +191,21 @@ for eventID in allEventNumbers:
         store2dHistogramAsPlainFile(histXvsY, classValue, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsX.csv", delimiter)
         store2dHistogramAsPlainFile(histXvsZ, classValue, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsX.csv", delimiter)
         store2dHistogramAsPlainFile(histYvsZ, classValue, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsY.csv", delimiter)
+	"""
 
 # do the 3d histograms next
 	histXYZ = np.histogramdd( np.array(curHits[:,1:4], np.float32), [numberBinsX, numberBinsY, numberBinsZ])
-	print curHits[:,1:3]
-	print np.concatenate([curHits[:,1:3],curHits[:,4]], axis=1)
-	# histXYT = np.histogramdd( np.array(np.concatenate([curHits[:,1:3],curHits[:,4]]), np.float32), [numberBinsX, numberBinsY, numberBinsT])
-	# histXZT = np.histogramdd( np.array(curHits[:,1]+curHits[:,3:5], np.float32), [numberBinsX, numberBinsZ, numberBinsT])
+	#print curHits[:,1:3].shape
+	#print curHits[:,4:].shape
+	#print np.concatenate([curHits[:,1:3],curHits[:,4:]], axis=1)
+	histXYT = np.histogramdd( np.array(np.concatenate([curHits[:,1:3],curHits[:,4:]], axis=1), np.float32), [numberBinsX, numberBinsY, numberBinsT])
+	# histXZT = np.histogramdd( np.array(np.concatenate([curHits[:,1:],curHits[:,3:5]], axis=1), np.float32), [numberBinsX, numberBinsZ, numberBinsT])
 	histYZT = np.histogramdd( np.array(curHits[:,2:5], np.float32), [numberBinsY, numberBinsZ, numberBinsT])
 
 	# store the 3 dimensional histograms to file
 	store3dHistogramAsPlainFile( histXYZ, classValue, "results/3dTo3d/xyz/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ.csv", delimiter)
 	store3dHistogramAsPlainFile( histXYT, classValue, "results/3dTo3d/xyt/hist_"+filenameOutput+"_event"+str(eventID)+"_XYT.csv", delimiter)
-	store3dHistogramAsPlainFile( histXZT, classValue, "results/3dTo3d/xzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XZT.csv", delimiter)
+	# store3dHistogramAsPlainFile( histXZT, classValue, "results/3dTo3d/xzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XZT.csv", delimiter)
 	store3dHistogramAsPlainFile( histYZT, classValue, "results/3dTo3d/yzt/hist_"+filenameOutput+"_event"+str(eventID)+"_YZT.csv", delimiter)
 
 # do the 4d and 3d time series histograms next
