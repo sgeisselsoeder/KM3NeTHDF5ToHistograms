@@ -39,8 +39,8 @@ for hit in hits:
 		# print hit[1], position
 		# write event_id x y z time
 		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-	else:
-		print hit[1]
+	#else:
+	#	print hit[1]
 f.close()
 
 faultProb = 0.2
@@ -57,8 +57,8 @@ for hit in hits:
 		# print hit[1], position
 		# write event_id x y z time
 		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-	else:
-		print hit[1]
+	#else:
+	#	print hit[1]
 f.close()
 
 
