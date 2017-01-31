@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
 import sys
-# import json
-# import pickle
-
 
 def singleStringTo2dNumpyArray(dataAsSingleString):
 	# the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
@@ -215,8 +212,7 @@ for eventID in allEventNumbers:
 	"""
 
 
-"""
-
+# """
 print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
 
 # read in all hits (OMID vs time format) for all events
@@ -244,6 +240,6 @@ for eventID in allEventNumbers:
         # store the histogram to file
         histFilename = "results/2dTo2d/omIDt/hist_"+filenameTracks+"_event"+str(eventID)+"_TvsOMID.pgm"
         store2dHistogramAsPGM(histIDvsT, histFilename)
-"""
+# """
 
 
