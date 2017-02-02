@@ -7,6 +7,6 @@ The hits are then used to create various histograms:
 - three dimensional time series: a series of histograms in xyz of the full detector, on histogram for each time bin
 - four dimensions: one histogram for xyzt (the same information as the 3d time series, but in one file for each event)
 
-All histograms are stored as .csv files, optional support for as grey-scale .pgm images is available for two-dimensional histograms.
-An example how the scripts can be used is given "doTheConversion.sh".
+All histograms are stored as .csv files, optional support for grey-scale .pgm images is available for two-dimensional histograms.
+An example how the scripts can be used is given by "doTheConversion.sh".
 
