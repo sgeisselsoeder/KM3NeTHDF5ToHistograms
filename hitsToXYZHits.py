@@ -3,6 +3,25 @@ import numpy as np
 import sys
 from random import randint
 
+def writeHits(hits,  
+faultProb = 0.1
+offlineOMs = []
+for i in range(0,int(numOMs*faultProb)):
+	offlineOMs.append(randint(0,numOMs))
+print offlineOMs
+
+# write the hits with xyz geometry, ignore "faulty" ones
+f = open(filenameBase+"_hitsXYZFaulty"+str(faultProb)+".txt", 'w')
+for hit in hits:
+	if not hit[1] in offlineOMs:
+		position = geo[int(hit[1])-1]
+		# print hit[1], position
+		# write event_id x y z time
+		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
+	#else:
+	#	print hit[1]
+f.close()
+
 
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 	print "Usage: python " + str(sys.argv[0]) + " file.h5"

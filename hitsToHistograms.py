@@ -157,7 +157,7 @@ for eventID in allEventNumbers:
 	curHits = hits[currentHitRows]
 	
 # do the 2d histograms first
-
+	"""
 	# slice out the times of the current hits
         times = np.array(curHits[:,4], np.float32)
         # slice out the coordinates of the current hits
@@ -174,7 +174,7 @@ for eventID in allEventNumbers:
         histYvsZ = np.histogram2d(z, y, [numberBinsZ, numberBinsY])
 
         # store the histograms to files
-	"""
+	#" ""
         # do not duplicate the output here ...
 	store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.pgm")
         store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.pgm")
@@ -182,7 +182,7 @@ for eventID in allEventNumbers:
         store2dHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsY.pgm")
         store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsZ.pgm")
         store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsZ.pgm")
-	"""
+	#" ""
         store2dHistogramAsCSV(histXvsT, classValue, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.csv", delimiter)
         store2dHistogramAsCSV(histYvsT, classValue, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.csv", delimiter)
         store2dHistogramAsCSV(histZvsT, classValue, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.csv", delimiter)
@@ -201,6 +201,15 @@ for eventID in allEventNumbers:
 	store3dHistogramAsCSV( histXYT, classValue, "results/3dTo3d/xyt/hist_"+filenameOutput+"_event"+str(eventID)+"_XYT.csv", delimiter)
 	store3dHistogramAsCSV( histXZT, classValue, "results/3dTo3d/xzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XZT.csv", delimiter)
 	store3dHistogramAsCSV( histYZT, classValue, "results/3dTo3d/yzt/hist_"+filenameOutput+"_event"+str(eventID)+"_YZT.csv", delimiter)
+	"""
+# add a rotation-symmetric 3d hist
+	x = np.array(curHits[1], np.float32)
+	y = np.array(curHits[2], np.float32)
+	# y = curHits[2]
+	r = sqrt(x*x + y*y)
+	zt = np.array(curHits[3:5], np.float32)
+	rzt = np.array(np.concatenate([r, zt], axis=1), np.float32)
+	histRZT = np.histogramdd(rzt, [numberBinsX, numberBinsZ, numberBinsT])
 
 # do the 4d and 3d time series histograms next
 	# this works but produces giant output files and is not required for now
