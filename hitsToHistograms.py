@@ -252,11 +252,12 @@ for eventID in allEventNumbers:
         times = np.array(curHits[:,3], np.int32)
 
         # create a histogram for this event
-        histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID])
+        histIDvsT = np.histogram2d(times, ids, [int(numberBinsT/2), int(numberBinsID/2)])
         # histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
 
         # store the histogram to file
-        store2dHistogramAsPGM(histIDvsT,             "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.pgm")
+        if (eventID == 782):
+		store2dHistogramAsPGM(histIDvsT,             "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.pgm")
         store2dHistogramAsCSV(histIDvsT, classValue, "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.csv", delimiter)
 # """
 
