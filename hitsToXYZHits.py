@@ -3,24 +3,28 @@ import numpy as np
 import sys
 from random import randint
 
-def writeHits(hits,  
-faultProb = 0.1
-offlineOMs = []
-for i in range(0,int(numOMs*faultProb)):
-	offlineOMs.append(randint(0,numOMs))
-print offlineOMs
+# write the hits in xyz (optional: for a random subset of surviving OMs)
+def writeHits(hits, geo, filename, faultProb = 0.0): 
+	numOMs = len(geo)
+	# print numOMs
 
-# write the hits with xyz geometry, ignore "faulty" ones
-f = open(filenameBase+"_hitsXYZFaulty"+str(faultProb)+".txt", 'w')
-for hit in hits:
-	if not hit[1] in offlineOMs:
-		position = geo[int(hit[1])-1]
-		# print hit[1], position
-		# write event_id x y z time
-		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-	#else:
-	#	print hit[1]
-f.close()
+	offlineOMs = []
+	for i in range(0,int(numOMs*faultProb)):
+		offlineOMs.append(randint(0,numOMs))
+	print faultProb
+	print offlineOMs
+
+	f = open(filename, 'w')
+	# write the hits with xyz geometry, ignore "faulty" ones
+	for hit in hits:
+		if not hit[1] in offlineOMs:
+			position = geo[int(hit[1])-1]
+			# print hit[1], position
+			# write event_id x y z time
+			f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
+		#else:
+		#	print hit[1]
+	f.close()
 
 
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
@@ -41,64 +45,15 @@ geo = np.loadtxt("km3GeoOm.txt")
 hits = np.loadtxt(filenameHits)
 
 # optional: write the hits in xyz for a random subset of surviving OMs
-numOMs = len(geo)
-# print numOMs
-
-faultProb = 0.1
-offlineOMs = []
-for i in range(0,int(numOMs*faultProb)):
-	offlineOMs.append(randint(0,numOMs))
-print offlineOMs
-
-# write the hits with xyz geometry, ignore "faulty" ones
-f = open(filenameBase+"_hitsXYZFaulty"+str(faultProb)+".txt", 'w')
-for hit in hits:
-	if not hit[1] in offlineOMs:
-		position = geo[int(hit[1])-1]
-		# print hit[1], position
-		# write event_id x y z time
-		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-	#else:
-	#	print hit[1]
-f.close()
-
-faultProb = 0.2
-offlineOMs = []
-for i in range(0,int(numOMs*faultProb)):
-	offlineOMs.append(randint(0,numOMs))
-print offlineOMs
-
-# write the hits with xyz geometry, ignore "faulty" ones
-f = open(filenameBase+"_hitsXYZFaulty"+str(faultProb)+".txt", 'w')
-for hit in hits:
-	if not hit[1] in offlineOMs:
-		position = geo[int(hit[1])-1]
-		# print hit[1], position
-		# write event_id x y z time
-		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-	#else:
-	#	print hit[1]
-f.close()
-
-
-
-# write the hits with xyz geometry
-f = open(filenameBase+"_hitsXYZ.txt", 'w')
-for hit in hits:
-	position = geo[int(hit[1])-1]
-	# print hit[1], position
-	# write event_id x y z time
-	f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-f.close()
+writeHits(hits, geo, filenameBase+"_hitsXYZ.txt", 0.0) 
+faultProbability = 0.1
+writeHits(hits, geo, filenameBase+"_hitsXYZFaulty"+str(faultProbability)+".txt", faultProbability) 
+faultProbability = 0.2
+writeHits(hits, geo, filenameBase+"_hitsXYZFaulty"+str(faultProbability)+".txt", faultProbability) 
 
 # write the triggered hits with xyz geometry
 hitsTriggered = np.loadtxt(filenameHitsTriggered)
-f = open(filenameBase+"_hitsTriggeredXYZ.txt", 'w')
-for hit in hits:
-	position = geo[int(hit[1])-1]
-	# print hit[1], position
-	# write event_id x y z time
-	f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-f.close()
+writeHits(hitsTriggered, geo, filenameBase+"_hitsTriggeredXYZ.txt", 0.0) 
+
 
 print "Done."
