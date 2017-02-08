@@ -4,26 +4,13 @@ import sys
 from random import randint
 
 # write the hits in xyz (optional: for a random subset of surviving OMs)
-def writeHits(hits, geo, filename, faultProb = 0.0): 
-	numOMs = len(geo)
-	# print numOMs
-
-	offlineOMs = []
-	for i in range(0,int(numOMs*faultProb)):
-		offlineOMs.append(randint(0,numOMs))
-	#print faultProb
-	#print offlineOMs
-
+def writeHits(hits, geo, filename): 
 	f = open(filename, 'w')
-	# write the hits with xyz geometry, ignore "faulty" ones
+	# write the hits with xyz geometry
 	for hit in hits:
-		if not hit[1] in offlineOMs:
-			position = geo[int(hit[1])-1]
-			# print hit[1], position
-			# write event_id x y z time
-			f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + "\n")
-		#else:
-		#	print hit[1]
+		position = geo[int(hit[1])-1]
+		# write event_id x y z time # add the original omID to allow artificially failing oms dynamically in histogram step
+		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + s + str(int(hit[1]) + "\n")
 	f.close()
 
 
@@ -47,17 +34,10 @@ hits = np.loadtxt(filenameHits)
 # write the hits in xyz for a random subset of surviving OMs
 print "Writing hits to file " + filenameBase+"_hitsXYZ.txt"
 writeHits(hits, geo, filenameBase+"_hitsXYZ.txt", 0.0) 
-faultProbability = 0.1
-print "Writing again with an artificial OM failure rate of " + str(faultProbability)
-writeHits(hits, geo, filenameBase+"_hitsXYZFaulty"+str(faultProbability)+".txt", faultProbability) 
-faultProbability = 0.2
-print "Writing again with an artificial OM failure rate of " + str(faultProbability)	
-writeHits(hits, geo, filenameBase+"_hitsXYZFaulty"+str(faultProbability)+".txt", faultProbability) 
 
 # write the triggered hits with xyz geometry
 print "Writing only triggered hits"
 hitsTriggered = np.loadtxt(filenameHitsTriggered)
 writeHits(hitsTriggered, geo, filenameBase+"_hitsTriggeredXYZ.txt", 0.0) 
-
 
 print "Done."

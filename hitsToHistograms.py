@@ -140,6 +140,24 @@ print "Generating histograms from the hits in XYZT format for files based on " +
 hits = readNumpyArrayFromFile(filenameHitsXYZT)
 allEventNumbers = set(hits[:,0])
 
+"""
+# TODO implement the artificial failing oms option
+numOMs = len(geo)
+        # print numOMs
+
+        offlineOMs = []
+        for i in range(0,int(numOMs*faultProb)):
+                offlineOMs.append(randint(0,numOMs))
+        #print faultProb
+        #print offlineOMs
+
+        f = open(filename, 'w')
+        # write the hits with xyz geometry, ignore "faulty" ones
+        for hit in hits:
+                if not hit[1] in offlineOMs:
+"""
+
+
 # allEventNumbers = set(hits[:,0]) # not required again
 for eventID in allEventNumbers:
         # evaluate one event at a time
