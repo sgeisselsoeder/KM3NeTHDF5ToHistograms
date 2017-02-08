@@ -31,11 +31,11 @@ hits = np.loadtxt(filenameHits)
 
 # write the hits in xyz for a random subset of surviving OMs
 print "Writing hits to file " + filenameBase+"_hitsXYZ.txt"
-writeHits(hits, geo, filenameBase+"_hitsXYZ.txt", 0.0) 
+writeHits(hits, geo, filenameBase+"_hitsXYZ.txt") 
 
 # write the triggered hits with xyz geometry
 print "Writing only triggered hits"
 hitsTriggered = np.loadtxt(filenameHitsTriggered)
-writeHits(hitsTriggered, geo, filenameBase+"_hitsTriggeredXYZ.txt", 0.0) 
+writeHits(hitsTriggered, geo, filenameBase+"_hitsTriggeredXYZ.txt") 
 
 print "Done."
