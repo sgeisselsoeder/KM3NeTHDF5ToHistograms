@@ -1,7 +1,5 @@
-import pandas as pd
 import numpy as np
 import sys
-from random import randint
 
 # write the hits in xyz (optional: for a random subset of surviving OMs)
 def writeHits(hits, geo, filename): 
@@ -10,7 +8,7 @@ def writeHits(hits, geo, filename):
 	for hit in hits:
 		position = geo[int(hit[1])-1]
 		# write event_id x y z time # add the original omID to allow artificially failing oms dynamically in histogram step
-		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + s + str(int(hit[1]) + "\n")
+		f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + s + str(int(hit[1])) + "\n")
 	f.close()
 
 
