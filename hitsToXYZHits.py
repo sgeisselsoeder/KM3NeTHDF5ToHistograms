@@ -11,8 +11,8 @@ def writeHits(hits, geo, filename, faultProb = 0.0):
 	offlineOMs = []
 	for i in range(0,int(numOMs*faultProb)):
 		offlineOMs.append(randint(0,numOMs))
-	print faultProb
-	print offlineOMs
+	#print faultProb
+	#print offlineOMs
 
 	f = open(filename, 'w')
 	# write the hits with xyz geometry, ignore "faulty" ones
@@ -44,14 +44,18 @@ geo = np.loadtxt("km3GeoOm.txt")
 # load the hits
 hits = np.loadtxt(filenameHits)
 
-# optional: write the hits in xyz for a random subset of surviving OMs
+# write the hits in xyz for a random subset of surviving OMs
+print "Writing hits to file " + filenameBase+"_hitsXYZ.txt"
 writeHits(hits, geo, filenameBase+"_hitsXYZ.txt", 0.0) 
 faultProbability = 0.1
+print "Writing again with an artificial OM failure rate of " + str(faultProbability)
 writeHits(hits, geo, filenameBase+"_hitsXYZFaulty"+str(faultProbability)+".txt", faultProbability) 
 faultProbability = 0.2
+print "Writing again with an artificial OM failure rate of " + str(faultProbability)	
 writeHits(hits, geo, filenameBase+"_hitsXYZFaulty"+str(faultProbability)+".txt", faultProbability) 
 
 # write the triggered hits with xyz geometry
+print "Writing only triggered hits"
 hitsTriggered = np.loadtxt(filenameHitsTriggered)
 writeHits(hitsTriggered, geo, filenameBase+"_hitsTriggeredXYZ.txt", 0.0) 
 
