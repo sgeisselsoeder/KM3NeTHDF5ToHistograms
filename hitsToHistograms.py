@@ -95,8 +95,7 @@ def store4dHistogramAsTimeSeriesOf3dHists(hist, classValue, filenameBase, delim 
 					histFile.write(str(int(entry)) + delim)
 		histFile.close()
 
-#def computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter):
-def computeAndStore4dTo2dHistograms(curHits):
+def computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter):
 	# slice out the times of the current hits
         times = np.array(curHits[:,4], np.float32)
 
@@ -161,6 +160,7 @@ def computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBin
 	# store the 4 dimensional histogram to file
 	store4dHistogramAsCSV( histXYZT, classValue, "results/4dTo4d/xyzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZT.csv", delimiter)
 	store4dHistogramAsTimeSeriesOf3dHists( histXYZT, classValue, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ", delimiter)
+
 
 def computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delimiter):
         # slice out the OM ids of the current hits
@@ -286,19 +286,17 @@ for eventID in allEventNumbers:
 	curHits = filterHitsForThisEvent(hits, eventID)
 
 	# do the 2d histograms 
-	computeAndStore4dTo2dHistograms(curHits)
-	# computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
+	computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
 
 	# do the 3d histograms
 	computeAndStore4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
 
 	# do the 4d and 3d time series histograms 
 	# works but produces giant output files and is not required for now
-	computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
+	# computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
 
 
-
-
+"""
 print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
 
 # read in all hits (OMID vs time format) for all events
@@ -316,4 +314,10 @@ for eventID in allEventNumbers:
 	# Do the 2dTo2dHistogram
 	computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delimiter)
 	# computeAndStore2dTo2dHistogram(curHits, int(numberBinsID/2), int(numberBinsT/2), filenameOutput, classValue, delimiter)
+
+"""
+
+
+
+
 
