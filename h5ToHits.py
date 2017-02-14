@@ -2,31 +2,6 @@ import pandas as pd
 import numpy as np
 import sys
 
-
-def singleStringTo2dNumpyArray(dataAsSingleString):
-        # the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
-        s = " " # s = "\t" s = ", "
-
-        dataAsList = dataAsSingleString.split("\n")
-        numEntries = len(dataAsList)-1
-
-        dataAsListList = dataAsList[0:numEntries]       # TODO investigate why the last entry of the read in list is empty
-        for i in range(0,numEntries):
-                dataAsListList[i] = dataAsList[i].split(s)
-
-        dataAsNpArray = np.array(dataAsListList)
-        # dataAsNpArray = np.array(dataAsListList, dtype=np.float32)
-        return dataAsNpArray
-
-def readNumpyArrayFromFile(filename):
-        # open the file
-        fileToRead = open(filename, 'r')
-        # read the contents
-        dataPlain = fileToRead.read()
-        fileToRead.close()
-        # parse the read data to a numpy array
-        return singleStringTo2dNumpyArray(dataPlain)
-
 def store2dHistogramAsPGM(hist, filename):
         histFile = open(filename, 'w')
         maximalValueThisHist = np.amax(hist[0])
@@ -42,6 +17,7 @@ def store2dHistogramAsPGM(hist, filename):
         histFile.close()
 
 def store2dHistogramAsCSV(hist, classValue, filename, delim = ","):
+	# TODO: replace by concat and savetxt
         histFile = open(filename, 'w')
         # write the class label
         histFile.write(str(int(classValue)) + delim)
@@ -124,8 +100,8 @@ def computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBin
         store2dHistogramAsCSV(histYvsZ, classValue, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsY.csv", delimiter)
 
         # store the histograms to images
-        """
-        # do not double the output for now
+        #"""
+        # maybe do not double the output
         store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.pgm")
         store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.pgm")
         store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.pgm")
@@ -181,7 +157,6 @@ def computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameO
         #store2dHistogramAsPGM(histIDvsT,             "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.pgm")
         store2dHistogramAsCSV(histIDvsT, classValue, "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.csv", delimiter)
 
-
 def getClassUpDown(track):
         # analyze the track info to determine the class number
         zenith = np.float32(track[4])
@@ -198,29 +173,33 @@ def filterHitsForThisEvent(hits, eventID):
 
 ######### End of functions for hits to histograms ###########
 
-def filterPrimaryTracks(tracks):
-	# return hits[ np.where(not hits[:,5] in offlineOMs)[0] ]
-	return tracks[ np.where( tracks[:,0] != 0.0)[0] ]
+def filterPrimaryTracks(tracksFull):
+	# only keep tracks from primary particles, implemented as only those with bjorken-y != 0.0
+	return tracksFull[ np.where( tracksFull[:,0] != 0.0)[0] ]
+
+def extractRelevantTrackInfo(tracks):
+	# keep the relevant info from the track: event_id particle_type dir_x dir_y dir_z energy isCC 
+	return np.array( np.concatenate( [tracks[:,14:15],tracks[:,13:14],tracks[:,1:5],tracks[:,7:8]], axis=1), np.float32 )
+
+def writeTracksCSV(tracksFull, filename, delim=","):
+	tracksPrimary = filterPrimaryTracks(tracksFull)
+	tracks = extractRelevantTrackInfo(tracksPrimary)
+	np.savetxt(filename, tracks, delimiter=delim)
+
+def filterTriggeredHits(hits):
+	# only keep triggered hits
+	return hits[ np.where( hits[:,13] == True)[0] ]
+	# return hits[ np.where( hits[:,6] == True)[0] ]	# old numbering
+
+def extractRelevantHitInfo(hits):
+	# keep the relevant info from each hit: event_id dom_id channel_id time 
+	return np.array( np.concatenate( [hits[:,14:15],hits[:,4:5],hits[:,0:1],hits[:,11:12]], axis=1), np.float32 )
+	# return np.array( np.concatenate( [hits[:,7:8],hits[:,1:2],hits[:,0:1],hits[:,4:5]], axis=1), np.float32 ) # old numbering
 
 
-def writeTracksCSV2(tracksFull, filename, s):
-	tracks = filterPrimaryTracks(tracksFull)
-	f = open(filename+"_tracks.txt", 'w')
-	for track in tracks:
-		# write event_id particle_type dir_x dir_y dir_z energy isCC
-		f.write(str(track[14]) + s + str(track[13]) + s + str(track[1]) + s + str(track[2]) + s + str(track[3]) + s + str(track[4]) + s + str(int(track[7])) + "\n")
-	f.close()
-
-
-def writeTracksCSV(tracks, filename, s):
-	f = open(filename+"_tracks.txt", 'w')
-	for track in tracks:
-		bjorkeny = track[0]
-		# only output for primary particles (they have bjorkeny != 0.0):
-		if bjorkeny != 0.0: 		
-			# write event_id particle_type dir_x dir_y dir_z energy isCC
-			f.write(str(track[14]) + s + str(track[13]) + s + str(track[1]) + s + str(track[2]) + s + str(track[3]) + s + str(track[4]) + s + str(int(track[7])) + "\n")
-	f.close()
+def writeHitsCSV2(hitsBloated, filename, delim):
+	hits = extractRelevantHitInfo(hitsBloated)
+	np.savetxt(filename, hits, delimiter=delim)
 
 def writeHitsCSV(hits, filename, s):
 	f = open(filename+"_hits.txt", 'w')
@@ -251,10 +230,6 @@ def writeHitsXYZCSV(hits, geo, filename, s):
 	f = open(filename+"_hitsXYZ.txt" , 'w')
         # write the hits with xyz geometry
         for hit in hits:
-		print hit
-		print geo
-		print hit[1]
-		print geo[int(hit[1])-1]
                 position = geo[int(hit[1])-1]
                 # write event_id x y z time # add the original omID to allow artificially failing oms dynamically in histogram step
                 f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + s + str(int(hit[1])) + "\n")
@@ -276,54 +251,34 @@ if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 
 filename = str(sys.argv[1])
 print "Extracting hits and tracks from hdf5 file " + filename
+filenameGeometry = "km3GeoOm.txt"
+print "Reading detector geometry from file " + filenameGeometry
+geo = np.loadtxt(filenameGeometry)
 
 # the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
-s = " "
+delim = ","
 
-tracksPlain = pd.read_hdf(filename, 'mc_tracks')
-tracks = np.array(tracksPlain)
-writeTracksCSV(tracks, filename, s)
-writeTracksCSV2(tracks, filename+"2", s)
+print "Reading tracks"
+tracks = np.array( pd.read_hdf(filename, 'mc_tracks') )
+#print "Writing tracks"
+#writeTracksCSV(tracks, filename+"_tracks.csv.gz", delim)
 
-hitsPlain = pd.read_hdf(filename, 'hits')
-hits = np.array(hitsPlain)
-#print hits.shape
-print hits
-writeHitsCSV(hits, filename, s)
+print "Reading hits"
+hits = extractRelevantHitInfo( np.array( pd.read_hdf(filename, 'hits') ) )
+#hitsBloated = np.array( pd.read_hdf(filename, 'hits') )
+#hits = extractRelevantHitInfo(hitsBloated)
+allEventNumbers = set(hits[:,0])
 
-# geo = np.loadtxt("km3GeoOm.txt")
-# TODO: convert hits to xyz to reuse them later
-# writeHitsXYZCSV(hits, geo, filename, s)
+# print "Writing hits omid"
+# np.savetxt(filename+"_hits.csv.gz", hits, delimiter=delim)
 
-print "Done."
-
-
-
-filenameBase = str(sys.argv[1])
-# print "Generating histograms from the hits in XYZ-format for files based on " + filenameBase
-filenameTracks = filenameBase + "_tracks.txt"
-filenameHitsXYZT = filenameBase + "_hitsXYZ.txt"
-filenameHitsOMIDT = filenameBase + "_hits.txt"
-filenameGeometry = "km3GeoOm.txt"
-
-filenameOutput = filenameBase.replace("/","_")
-filenameOutput = filenameOutput.replace(".","_")
-
-delimiter = ","
+# print "Converting hits omid -> XYZ"
+hitsXYZ = convertHitsXYZ(hits, geo)
+# print "Writing hits XYZ"
+# np.savetxt(filename+"_hitsXYZ.csv.gz", hitsXYZ, delimiter=delim)
 
 
-# the number of bins could partially also be deduced from the geometry
-numberBinsT = 100       # number of bins in time
-numberBinsX = 11        # number of bins in x
-numberBinsY = 11        # number of bins in y
-numberBinsZ = 18        # number of bins in z
-# numberBinsID = 2070 # derived from geometry
-
-# read in the geometry
-geo = readNumpyArrayFromFile(filenameGeometry)
-omIDs = geo[:,0]
-numberBinsID = len(set(omIDs))
-
+# not working yet
 """
 # optionally: determine artificially failing oms
 faultProbability = 0.1
@@ -334,20 +289,6 @@ for i in range(0,int(numOMs*faultProbability)):
 #print faultProbability
 #print offlineOMs
 #"""
-
-# read in the tracks for all events
-# the tracks can be used to determine the class / desired outcome(s) for each event     # BEWARE: they may not end up as "features" !
-tracks2 = readNumpyArrayFromFile(filenameTracks)
-print tracks.shape, tracks2.shape
-
-print "Generating histograms from the hits in XYZT format for files based on " + filenameBase
-
-# read in all hits for all events
-hits2 = readNumpyArrayFromFile(filenameHitsXYZT)
-print hits.shape, hits2.shape
-allEventNumbers = set(hits[:,0])
-
-# not working yet
 """
 # only required if artificial om failures are desired:
 temp = np.where(not hits[:,5] in offlineOMs)
@@ -363,36 +304,17 @@ print len(hits), len(survivingHits)
 sys.exit()
 """
 
-"""
-# TODO: use xyz converted hits for this
-# Evaluate one event at a time
-for eventID in allEventNumbers:
-        # Determine the class of this event
-        classValue = getClassUpDown( tracks[int(eventID)] )
-
-        # filter all hits belonging to this event
-        curHits = filterHitsForThisEvent(hits, eventID)
-
-        # do the 2d histograms 
-        computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
-
-        # do the 3d histograms
-        computeAndStore4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
-
-        # do the 4d and 3d time series histograms 
-        # works but produces giant output files and is not required for now
-        # computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
-"""
+# the number of bins could partially also be deduced from the geometry
+numberBinsT = 100       # number of bins in time
+numberBinsX = 11        # number of bins in x
+numberBinsY = 11        # number of bins in y
+numberBinsZ = 18        # number of bins in z
+# determine the number of bins as the number of OM ids found in the geometry file
+numberBinsID = len(set(geo[:,0]))
+filenameOutput = filename.replace("/","_").replace(".","_")
 
 
-print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
-
-# read in all hits (OMID vs time format) for all events
-hits3 = readNumpyArrayFromFile(filenameHitsOMIDT)
-allEventNumbers = set(hits[:,0])
-
-convertHitsXYZAndWriteCSV(hits3, geo, filename)
-
+print "Generating histograms from the hits in OMID versus time format for files based on " + filename
 # Evaluate one event at a time
 for eventID in allEventNumbers:
         # Determine the class of this event
@@ -403,9 +325,26 @@ for eventID in allEventNumbers:
 
         # Do the 2dTo2dHistogram
         computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delimiter)
-        # computeAndStore2dTo2dHistogram(curHits, int(numberBinsID/2), int(numberBinsT/2), filenameOutput, classValue, delimiter)
 
 
+print "Generating histograms from the hits in XYZT format for files based on " + filename
+# Evaluate one event at a time
+for eventID in allEventNumbers:
+        # Determine the class of this event
+        classValue = getClassUpDown( tracks[int(eventID)] )
+
+        # filter all hits belonging to this event
+        curHits = filterHitsForThisEvent(hitsXYZ, eventID)
+
+        # do the 2d histograms 
+        computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delim)
+
+        # do the 3d histograms
+        computeAndStore4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delim)
+
+        # do the 4d and 3d time series histograms 
+        # works but produces giant output files and is not required for now
+        computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delim)
 
 
 

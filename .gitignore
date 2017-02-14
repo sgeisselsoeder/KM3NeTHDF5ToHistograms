@@ -5,3 +5,5 @@
 *.pgm
 *.csv
 hdf5files
+.ipynb_checkpoints
+Untitled.ipynb
