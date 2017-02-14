@@ -289,7 +289,7 @@ for eventID in allEventNumbers:
         curHits = filterHitsForThisEvent(hits, eventID)
 
         # Do the 2dTo2dHistogram
-        computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delimiter)
+        computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delim)
 
 
 print "Generating histograms from the hits in XYZT format for files based on " + filename
