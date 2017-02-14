@@ -1,5 +1,6 @@
 *.h5
 *.h5*.txt
+*.h5*.csv*
 *.swp
 *.hist
 *.pgm
