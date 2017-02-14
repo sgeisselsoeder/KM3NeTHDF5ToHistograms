@@ -97,7 +97,7 @@ def store4dHistogramAsTimeSeriesOf3dHists(hist, classValue, filenameBase, delim 
                 histFile.close()
 
 
-def computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter):
+def computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter = ","):
         # slice out the times of the current hits
         times = np.array(curHits[:,4], np.float32)
 
@@ -134,7 +134,7 @@ def computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBin
         store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsZ.pgm")
         #"""
 
-def computeAndStore4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter):
+def computeAndStore4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter = ","):
         histXYZ = np.histogramdd( np.array(curHits[:,1:4], np.float32), [numberBinsX, numberBinsY, numberBinsZ])
         histXYT = np.histogramdd( np.array(np.concatenate([curHits[:,1:3],curHits[:,4:5]], axis=1), np.float32), [numberBinsX, numberBinsY, numberBinsT])
         histXZT = np.histogramdd( np.array(np.concatenate([curHits[:,1:2],curHits[:,3:5]], axis=1), np.float32), [numberBinsX, numberBinsZ, numberBinsT])
@@ -157,7 +157,7 @@ def computeAndStore4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBin
         store3dHistogramAsCSV( histRZT, classValue, "results/4dTo3d/rzt/hist_"+filenameOutput+"_event"+str(eventID)+"_RZT.csv", delimiter)
 
 
-def computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter):
+def computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter = ","):
         curHitsWithoutEventID = np.array(curHits[:,1:5], np.float32)
         histXYZT = np.histogramdd(curHitsWithoutEventID, [numberBinsX, numberBinsY, numberBinsZ, numberBinsT])
 
@@ -166,7 +166,7 @@ def computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBin
         store4dHistogramAsTimeSeriesOf3dHists( histXYZT, classValue, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ", delimiter)
 
 
-def computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delimiter):
+def computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delimiter = ","):
         # slice out the OM ids of the current hits
         ids = np.array(curHits[:,1], np.int32)
 
@@ -198,6 +198,18 @@ def filterHitsForThisEvent(hits, eventID):
 
 ######### End of functions for hits to histograms ###########
 
+def filterPrimaryTracks(tracks):
+	# return hits[ np.where(not hits[:,5] in offlineOMs)[0] ]
+	return tracks[ np.where( tracks[:,0] != 0.0)[0] ]
+
+
+def writeTracksCSV2(tracksFull, filename, s):
+	tracks = filterPrimaryTracks(tracksFull)
+	f = open(filename+"_tracks.txt", 'w')
+	for track in tracks:
+		# write event_id particle_type dir_x dir_y dir_z energy isCC
+		f.write(str(track[14]) + s + str(track[13]) + s + str(track[1]) + s + str(track[2]) + s + str(track[3]) + s + str(track[4]) + s + str(int(track[7])) + "\n")
+	f.close()
 
 
 def writeTracksCSV(tracks, filename, s):
@@ -223,6 +235,18 @@ def writeHitsCSV(hits, filename, s):
 	f.close()
 	#fTrig.close()
 
+def convertHitsXYZ(hits, geo):
+        # write the hits with xyz geometry
+	temp = []
+        for hit in hits:
+                position = geo[int(hit[1])-1]
+		temp.append( [int(hit[0]), position[1], position[2], position[3], hit[3], int(hit[1])] )
+	return np.array(temp)
+
+def convertHitsXYZAndWriteCSV(hits, geo, filename, delimiter=","):
+	hitsXYZ = convertHitsXYZ(hits, geo)
+	np.savetxt(filename, hitsXYZ, delimiter)
+
 def writeHitsXYZCSV(hits, geo, filename, s):
 	f = open(filename+"_hitsXYZ.txt" , 'w')
         # write the hits with xyz geometry
@@ -235,6 +259,16 @@ def writeHitsXYZCSV(hits, geo, filename, s):
                 # write event_id x y z time # add the original omID to allow artificially failing oms dynamically in histogram step
                 f.write(str(int(hit[0])) + s + str(position[1]) + s + str(position[2]) + s + str(position[3]) + s + str(hit[3]) + s + str(int(hit[1])) + "\n")
         f.close()
+
+
+
+
+
+
+
+#### main start here ;-) ######
+
+
 
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 	print "Usage: python " + str(sys.argv[0]) + " file.h5"
@@ -249,6 +283,7 @@ s = " "
 tracksPlain = pd.read_hdf(filename, 'mc_tracks')
 tracks = np.array(tracksPlain)
 writeTracksCSV(tracks, filename, s)
+writeTracksCSV2(tracks, filename+"2", s)
 
 hitsPlain = pd.read_hdf(filename, 'hits')
 hits = np.array(hitsPlain)
@@ -354,7 +389,9 @@ print "Generating histograms from the hits in OMID versus time format for files 
 
 # read in all hits (OMID vs time format) for all events
 hits3 = readNumpyArrayFromFile(filenameHitsOMIDT)
-#allEventNumbers = set(hits[:,0])
+allEventNumbers = set(hits[:,0])
+
+convertHitsXYZAndWriteCSV(hits3, geo, filename)
 
 # Evaluate one event at a time
 for eventID in allEventNumbers:
