@@ -16,6 +16,27 @@ def store2dHistogramAsPGM(hist, filename):
                 histFile.write("\n")
         histFile.close()
 
+def store2dHistogramAsCSV2(hist, classValue, filename, delim = ","):
+	# TODO: replace by concat and savetxt
+	print hist
+	print hist[0]
+	print hist[0].shape
+	print len(hist[0])
+	print len(hist[0][0])
+	test = np.reshape(hist[0], (len(hist[0]*len(hist[0][0])), 1))
+	print test
+	print test.shape
+        histFile = open(filename, 'w')
+        # write the class label
+        histFile.write(str(int(classValue)) + delim)
+        # write the actual data
+        for row in hist[0]:
+                for entry in row:
+                        # write the actual values
+                        histFile.write(str(int(entry)) + delim)
+        histFile.write("\n")
+        histFile.close()
+
 def store2dHistogramAsCSV(hist, classValue, filename, delim = ","):
 	# TODO: replace by concat and savetxt
         histFile = open(filename, 'w')
@@ -94,9 +115,9 @@ def computeAndStore4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBin
         store2dHistogramAsCSV(histXvsT, classValue, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.csv", delim)
         store2dHistogramAsCSV(histYvsT, classValue, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.csv", delim)
         store2dHistogramAsCSV(histZvsT, classValue, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.csv", delim)
+        # store2dHistogramAsCSV2(histZvsT, classValue, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ2.csv", delim)
         store2dHistogramAsCSV(histXvsY, classValue, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsX.csv", delim)
         store2dHistogramAsCSV(histXvsZ, classValue, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsX.csv", delim)
-	store2dHistogramAsCSV(histXvsZ, classValue, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsX.csv", delim)
         store2dHistogramAsCSV(histYvsZ, classValue, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsY.csv", delim)
 
         # store the histograms to images
@@ -202,15 +223,14 @@ def convertHitsXYZ(hits, geo):
 
 
 
-#### main start here ;-) ######
-
-
+#### main starts here ;-) ######
 
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
 	print "Usage: python " + str(sys.argv[0]) + " file.h5"
 	sys.exit(1)
 
 filename = str(sys.argv[1])
+# filename = "km3_v4_numuCC_89.JTE_r2356.root.h5"
 print "Extracting hits and tracks from hdf5 file " + filename
 filenameGeometry = "km3GeoOm.txt"
 print "Reading detector geometry from file " + filenameGeometry
@@ -242,34 +262,7 @@ hitsXYZ = convertHitsXYZ(hits, geo)
 # print "Writing hits XYZ"
 # np.savetxt(filename+"_hitsXYZ.csv.gz", hitsXYZ, delimiter=delim)
 
-
-# not working yet
-"""
-# optionally: determine artificially failing oms
-faultProbability = 0.1
-numOMs = len(geo)
-offlineOMs = []
-for i in range(0,int(numOMs*faultProbability)):
-        offlineOMs.append(randint(0,numOMs))
-#print faultProbability
-#print offlineOMs
-#"""
-"""
-# only required if artificial om failures are desired:
-temp = np.where(not hits[:,5] in offlineOMs)
-print temp
-
-survivingHitRows = np.where(not hits[:,5] in offlineOMs)[0]
-print survivingHitRows
-survivingHits = hits[survivingHitRows]
-print len(hits), len(survivingHits)
-
-# survivingHits = hits[ np.where(not hits[:,5] in offlineOMs)[0] ]
-# print len(hits), len(survivingHits)
-sys.exit()
-"""
-
-# the number of bins could partially also be deduced from the geometry
+# Start output related work here
 numberBinsT = 100       # number of bins in time
 numberBinsX = 11        # number of bins in x
 numberBinsY = 11        # number of bins in y
