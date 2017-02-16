@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #PBS -l nodes=1:ppn=4,walltime=23:59:00
-#PBS -N h5ToHist
+#PBS -N anumu1_h5ToH
 
 PROJECTPATH="/home/hpc/capn/mpp460/projects/km3netHdf5ToHistograms/"
 echo "PROJECTPATH: $PROJECTPATH"
