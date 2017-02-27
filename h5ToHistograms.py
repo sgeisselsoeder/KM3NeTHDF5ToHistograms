@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
 import pandas as pd
 import numpy as np
 import sys
@@ -35,59 +30,17 @@ def convertHitsXYZ(hits, geo):
         return np.array(temp)
 
 
-# In[9]:
-
-#### main starts here ;-) ######
-
-if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
-        print "Usage: python " + str(sys.argv[0]) + " file.h5"
-        sys.exit(1)
-filename = str(sys.argv[1])
-#filename = "data.h5"
-print "Extracting hits and tracks from hdf5 file " + filename
-filenameGeometry = "km3GeoOm.txt"
-print "Reading detector geometry from file " + filenameGeometry
-geo = np.loadtxt(filenameGeometry)
-
-# the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
-delim = ","
-
-print "Reading tracks"
-tracksFull = np.array( pd.read_hdf(filename, 'mc_tracks') )
-print "Filtering primary tracks"
-tracksPrimary = filterPrimaryTracks(tracksFull)
-print "Filtering relevant info for each track"
-tracks = extractRelevantTrackInfo(tracksPrimary)
-#print "Writing tracks"
-#np.savetxt(filename+"_tracks.csv.gz", tracks, delimiter=delim)
-
-print "Reading hits"
-hits = extractRelevantHitInfo( np.array( pd.read_hdf(filename, 'hits') ) )
-#hitsBloated = np.array( pd.read_hdf(filename, 'hits') )
-#hits = extractRelevantHitInfo(hitsBloated)
-allEventNumbers = set(hits[:,0])
-
-# print "Writing hits omid"
-# np.savetxt(filename+"_hits.csv.gz", hits, delimiter=delim)
-
-print "Converting hits omid -> XYZ"
-hitsXYZ = convertHitsXYZ(hits, geo)
-# print "Writing hits XYZ"
-# np.savetxt(filename+"_hitsXYZ.csv.gz", hitsXYZ, delimiter=delim)
-
-# Start output related work here
-numberBinsT = 100       # number of bins in time
-numberBinsX = 11        # number of bins in x
-numberBinsY = 11        # number of bins in y
-numberBinsZ = 18        # number of bins in z
-# determine the number of bins as the number of OM ids found in the geometry file
-numberBinsID = len(set(geo[:,0]))
-filenameOutput = filename.replace("/","_").replace(".","_")
-
-print "Done converting."
 
 
-# In[14]:
+
+
+
+
+
+
+
+
+
 
 def store2dHistogramAsPGM(hist, filename):
         histFile = open(filename, 'w')
@@ -107,18 +60,6 @@ def store2dHistogramAsCSV(hist, classValue, filename, delim = ","):
         #test2 = np.append(np.array([classValue,]), test)
         #np.savetxt(filename, test2[np.newaxis], delimiter=delim)
         np.savetxt(filename, np.append(np.array([classValue,]), np.reshape( hist[0], (len(hist[0])*len(hist[0][0]),1) ) )[np.newaxis], delimiter=delim, fmt='%d')
-
-#def store2dHistogramAsCSV(hist, classValue, filename, delim = ","):
-#        histFile = open(filename, 'w')
-#        # write the class label
-#        histFile.write(str(int(classValue)) + delim)
-#        # write the actual data
-#        for row in hist[0]:
-#                for entry in row:
-#                        # write the actual values
-#                        histFile.write(str(int(entry)) + delim)
-#        histFile.write("\n")
-#        histFile.close()
 
 def store3dHistogramAsCSV(hist, classValue, filename, delim = ","):
         np.savetxt(filename, np.append(np.array([classValue,]), np.reshape( hist[0], (len(hist[0])*len(hist[0][0])*len(hist[0][0][0]),1) ) )[np.newaxis], delimiter=delim, fmt='%d')
@@ -157,7 +98,7 @@ def compute4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numb
         all4dTo2dHistograms.append([histXvsT[0], histYvsT[0], histZvsT[0], histXvsY[0], histXvsZ[0], histYvsZ[0]])
         
         # store the histograms to images   # commented out by default to not double the output
-        #"""
+        """
         store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.pgm")
         store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.pgm")
         store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.pgm")
@@ -165,43 +106,6 @@ def compute4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numb
         store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsZ.pgm")
         store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsZ.pgm")
         #"""
-
-"""        
-def computeAndStore4dTo2dHistograms(eventID, curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delim = ","):
-        # slice out the times of the current hits
-        times = np.array(curHits[:,4], np.float32)
-
-        # slice out the coordinates of the current hits
-        x = np.array(curHits[:,1], np.float32)
-        y = np.array(curHits[:,2], np.float32)
-        z = np.array(curHits[:,3], np.float32)
-
-        # create histograms for this event
-        histXvsT = np.histogram2d(times, x, [numberBinsT, numberBinsX])
-        histYvsT = np.histogram2d(times, y, [numberBinsT, numberBinsY])
-        histZvsT = np.histogram2d(times, z, [numberBinsT, numberBinsZ])
-        histXvsY = np.histogram2d(y, x, [numberBinsY, numberBinsX])
-        histXvsZ = np.histogram2d(z, x, [numberBinsZ, numberBinsX])
-        histYvsZ = np.histogram2d(z, y, [numberBinsZ, numberBinsY])
-
-        # store the histograms to csv files, resulting in one file per event and histogram/projection
-        store2dHistogramAsCSV(histXvsT, classValue, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.csv", delim)
-        store2dHistogramAsCSV(histYvsT, classValue, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.csv", delim)
-        store2dHistogramAsCSV(histZvsT, classValue, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.csv", delim)
-        store2dHistogramAsCSV(histXvsY, classValue, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsX.csv", delim)
-        store2dHistogramAsCSV(histXvsZ, classValue, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsX.csv", delim)
-        store2dHistogramAsCSV(histYvsZ, classValue, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_ZvsY.csv", delim)
-
-        # store the histograms to images   # commented out by default to not double the output
-        " ""
-        store2dHistogramAsPGM(histXvsT, "results/4dTo2d/xt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsX.pgm")
-        store2dHistogramAsPGM(histYvsT, "results/4dTo2d/yt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsY.pgm")
-        store2dHistogramAsPGM(histZvsT, "results/4dTo2d/zt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsZ.pgm")
-        store2dHistogramAsPGM(histXvsY, "results/4dTo2d/xy/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsY.pgm")
-        store2dHistogramAsPGM(histXvsZ, "results/4dTo2d/xz/hist_"+filenameOutput+"_event"+str(eventID)+"_XvsZ.pgm")
-        store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsZ.pgm")
-        #" ""
-"""
 
 def compute4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT):
         histXYZ = np.histogramdd( np.array(curHits[:,1:4], np.float32), [numberBinsX, numberBinsY, numberBinsZ])
@@ -224,29 +128,6 @@ def compute4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numb
         all4dTo3dHistogramsYZT.append( histYZT[0] )
         all4dTo3dHistogramsRZT.append( histRZT[0] )
 
-"""        
-def computeAndStore4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delim = ","):
-        histXYZ = np.histogramdd( np.array(curHits[:,1:4], np.float32), [numberBinsX, numberBinsY, numberBinsZ])
-        histXYT = np.histogramdd( np.array(np.concatenate([curHits[:,1:3],curHits[:,4:5]], axis=1), np.float32), [numberBinsX, numberBinsY, numberBinsT])
-        histXZT = np.histogramdd( np.array(np.concatenate([curHits[:,1:2],curHits[:,3:5]], axis=1), np.float32), [numberBinsX, numberBinsZ, numberBinsT])
-        histYZT = np.histogramdd( np.array(curHits[:,2:5], np.float32), [numberBinsY, numberBinsZ, numberBinsT])
-
-        # store the 3 dimensional histograms to file
-        store3dHistogramAsCSV( histXYZ, classValue, "results/4dTo3d/xyz/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ.csv", delim)
-        store3dHistogramAsCSV( histXYT, classValue, "results/4dTo3d/xyt/hist_"+filenameOutput+"_event"+str(eventID)+"_XYT.csv", delim)
-        store3dHistogramAsCSV( histXZT, classValue, "results/4dTo3d/xzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XZT.csv", delim)
-        store3dHistogramAsCSV( histYZT, classValue, "results/4dTo3d/yzt/hist_"+filenameOutput+"_event"+str(eventID)+"_YZT.csv", delim)
-
-        # add a rotation-symmetric 3d hist
-        x = np.array(curHits[:,1:2], np.float32)
-        y = np.array(curHits[:,2:3], np.float32)
-        r = np.sqrt(x*x + y*y)
-        zt = np.array(curHits[:,3:5], np.float32)
-        rzt = np.array(np.concatenate([r, zt], axis=1), np.float32)
-        histRZT = np.histogramdd(rzt, [numberBinsX, numberBinsZ, numberBinsT])
-        store3dHistogramAsCSV( histRZT, classValue, "results/4dTo3d/rzt/hist_"+filenameOutput+"_event"+str(eventID)+"_RZT.csv", delim)
-"""
-
 def compute4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT):
         curHitsWithoutEventID = np.array(curHits[:,1:5], np.float32)
         histXYZT = np.histogramdd(curHitsWithoutEventID, [numberBinsX, numberBinsY, numberBinsZ, numberBinsT])
@@ -255,15 +136,6 @@ def compute4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numb
         # TODO: also save all the 3d time series ... or do this at output level ...       
         # store4dHistogramAsTimeSeriesOf3dHists( histXYZT, classValue, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ", delim)
 
-"""
-def computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delim = ","):
-        curHitsWithoutEventID = np.array(curHits[:,1:5], np.float32)
-        histXYZT = np.histogramdd(curHitsWithoutEventID, [numberBinsX, numberBinsY, numberBinsZ, numberBinsT])
-
-        # store the 4 dimensional histogram to file
-        store4dHistogramAsCSV( histXYZT, classValue, "results/4dTo4d/xyzt/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZT.csv", delim)
-        store4dHistogramAsTimeSeriesOf3dHists( histXYZT, classValue, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ", delim)
-"""
 
 def compute2dTo2dHistogram(curHits, numberBinsID, numberBinsT):
         # slice out the OM ids of the current hits
@@ -277,24 +149,8 @@ def compute2dTo2dHistogram(curHits, numberBinsID, numberBinsT):
         # histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
         
         all2dTo2dHistograms.append(histIDvsT[0])
-        store2dHistogramAsPGM(histIDvsT, "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.pgm")
-        
-"""     
-def computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delim = ","):
-        # slice out the OM ids of the current hits
-        ids = np.array(curHits[:,1], np.int32)
+        # store2dHistogramAsPGM(histIDvsT, "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.pgm")
 
-        # slice out the times of the current hits
-        times = np.array(curHits[:,3], np.int32)
-
-        # create a histogram for this event
-        histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID])
-        # histIDvsT = np.histogram2d(times, ids, [numberBinsT, numberBinsID], [[consideredStart, consideredEnd],])
-
-        # store the histogram to file
-        #store2dHistogramAsPGM(histIDvsT,             "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.pgm")
-        store2dHistogramAsCSV(histIDvsT, classValue, "results/2dTo2d/omIDt/hist_"+filenameOutput+"_event"+str(eventID)+"_TvsOMID.csv", delim)
-"""
         
 def getClassUpDown(track):
         # analyze the track info to determine the class number
@@ -305,13 +161,8 @@ def getClassUpDown(track):
         return classValue
 
 def filterHitsForThisEvent(hits, eventID):
-        # currentHitRows = np.where(hits[:,0] == eventID)[0]
-        # print "... found " + str(len(currentHitRows)) + " hits for event " + str(eventID)
-        # return hits[currentHitRows]
         return hits[ np.where(hits[:,0] == eventID)[0] ]
 
-
-# In[15]:
 
 def store2dHistogramsAsCSV(classValues, hists, filename, delim = ","):
         # TODO: convert this to more efficient savetxt version
@@ -368,13 +219,92 @@ def store4dHistogramsAsCSV(classValues, hists, filename, delim = ","):
         histFile.close()
 
 
-# In[16]:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### main starts here ;-) ######
+
+if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
+        print "Usage: python " + str(sys.argv[0]) + " file.h5"
+        sys.exit(1)
+filename = str(sys.argv[1])
+
+print "Extracting hits and tracks from hdf5 file " + filename
+filenameGeometry = "km3GeoOm.txt"
+print "Reading detector geometry from file " + filenameGeometry
+geo = np.loadtxt(filenameGeometry)
+
+# the separator used in output files between entries (e.g. whitespace, comma, tab, ...)
+delim = ","
+
+print "Reading tracks"
+tracksFull = np.array( pd.read_hdf(filename, 'mc_tracks') )
+print "Filtering primary tracks"
+tracksPrimary = filterPrimaryTracks(tracksFull)
+print "Filtering relevant info for each track"
+tracks = extractRelevantTrackInfo(tracksPrimary)
+#print "Writing tracks"
+#np.savetxt(filename+"_tracks.csv.gz", tracks, delimiter=delim)
+
+print "Reading hits"
+hits = extractRelevantHitInfo( np.array( pd.read_hdf(filename, 'hits') ) )
+#hitsBloated = np.array( pd.read_hdf(filename, 'hits') )
+#hits = extractRelevantHitInfo(hitsBloated)
+allEventNumbers = set(hits[:,0])
+
+# print "Writing hits omid"
+# np.savetxt(filename+"_hits.csv.gz", hits, delimiter=delim)
+
+print "Converting hits omid -> XYZ"
+hitsXYZ = convertHitsXYZ(hits, geo)
+# print "Writing hits XYZ"
+# np.savetxt(filename+"_hitsXYZ.csv.gz", hitsXYZ, delimiter=delim)
+
+# Start output related work here
+numberBinsT = 100       # number of bins in time
+numberBinsX = 11        # number of bins in x
+numberBinsY = 11        # number of bins in y
+numberBinsZ = 18        # number of bins in z
+# determine the number of bins as the number of OM ids found in the geometry file
+numberBinsID = len(set(geo[:,0]))
+filenameOutput = filename.replace("/","_").replace(".","_")
+
+print "Done converting."
+
 
 print "Generating histograms from the hits in XYZT format for files based on " + filename
 
 allClassValues = []
 all4dTo2dHistograms = []
-#all4dTo3dHistograms = []
 all4dTo4dHistograms = []
 all4dTo3dHistogramsXYZ = []
 all4dTo3dHistogramsXYT = []
@@ -411,27 +341,21 @@ store2dHistogramsAsCSV(allClassValues, np.array(all4dTo2dHistograms)[:,2], "resu
 store2dHistogramsAsCSV(allClassValues, np.array(all4dTo2dHistograms)[:,3], "results/4dTo2d/xy/hist_"+filenameOutput+"_xy.csv")
 store2dHistogramsAsCSV(allClassValues, np.array(all4dTo2dHistograms)[:,4], "results/4dTo2d/xz/hist_"+filenameOutput+"_xz.csv")
 store2dHistogramsAsCSV(allClassValues, np.array(all4dTo2dHistograms)[:,5], "results/4dTo2d/yz/hist_"+filenameOutput+"_yz.csv")
-"""
+
 print "Storing 3d histograms from xyzt hits to results/4dTo3d/*/hist_"+filenameOutput+"_*.csv"
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsXYZ), "results/4dTo3d/xyz/hist_"+filenameOutput+"_xyz.csv")
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsXYT), "results/4dTo3d/xyt/hist_"+filenameOutput+"_xyt.csv")
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsXZT), "results/4dTo3d/xzt/hist_"+filenameOutput+"_xzt.csv")
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsYZT), "results/4dTo3d/yzt/hist_"+filenameOutput+"_yzt.csv")
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsRZT), "results/4dTo3d/rzt/hist_"+filenameOutput+"_rzt.csv")
-"""
-"""
-store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistograms)[:,0], "results/4dTo3d/xyz/hist_"+filenameOutput+"_xyz.csv")
-store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistograms)[:,1], "results/4dTo3d/xyt/hist_"+filenameOutput+"_xyt.csv")
-store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistograms)[:,2], "results/4dTo3d/xzt/hist_"+filenameOutput+"_xzt.csv")
-store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistograms)[:,3], "results/4dTo3d/yzt/hist_"+filenameOutput+"_yzt.csv")
-store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistograms)[:,4], "results/4dTo3d/rzt/hist_"+filenameOutput+"_rzt.csv")
-#"""
 
-# print "Storing 4d histograms from xyzt hits to results/4dTo3d/xyzt/hist_"+filenameOutput+"_xyzt.csv"
-#store4dHistogramsAsCSV(allClassValues, np.array(all4dTo4dHistograms), "results/4dTo4d/xyzt/hist_"+filenameOutput+"_xyzt.csv")
+# """
+print "Storing 4d histograms from xyzt hits to results/4dTo3d/xyzt/hist_"+filenameOutput+"_xyzt.csv"
+store4dHistogramsAsCSV(allClassValues, np.array(all4dTo4dHistograms), "results/4dTo4d/xyzt/hist_"+filenameOutput+"_xyzt.csv")
+# """
 
 
-# In[17]:
+
 
 print "Generating histograms from the hits in OMID versus time format for files based on " + filename
 
@@ -439,7 +363,6 @@ allClassValues = []
 all2dTo2dHistograms = []
 
 # Evaluate one event at a time
-#for eventID in [1,1]:
 for eventID in allEventNumbers:
         # Determine the class of this event
         allClassValues.append(getClassUpDown( tracks[int(eventID)] ))
@@ -448,14 +371,10 @@ for eventID in allEventNumbers:
         curHits = filterHitsForThisEvent(hits, eventID)
 
         # Do the 2dTo2dHistogram
-        #computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delim)
         compute2dTo2dHistogram(curHits, numberBinsID, numberBinsT)
 
 print "Storing 2d histograms from omidt hits to results/2dTo2d/omIDt/hist_"+filenameOutput+"_omidt.csv"
 store2dHistogramsAsCSV(allClassValues, np.array(all2dTo2dHistograms), "results/2dTo2d/omIDt/hist_"+filenameOutput+"_omidt.csv")
-
-
-# In[ ]:
 
 
 

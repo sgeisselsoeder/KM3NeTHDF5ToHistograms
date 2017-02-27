@@ -1,4 +1,3 @@
-#HDFFOLDER=../data/km3netHDF5Files
 #HDFFOLDER=~/woodyhome/hdf5files
 HDFFOLDER=./hdf5files
 
