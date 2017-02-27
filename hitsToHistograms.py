@@ -296,7 +296,6 @@ for eventID in allEventNumbers:
 	# computeAndStore4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, filenameOutput, classValue, delimiter)
 
 
-"""
 print "Generating histograms from the hits in OMID versus time format for files based on " + filenameBase
 
 # read in all hits (OMID vs time format) for all events
@@ -315,7 +314,6 @@ for eventID in allEventNumbers:
 	computeAndStore2dTo2dHistogram(curHits, numberBinsID, numberBinsT, filenameOutput, classValue, delimiter)
 	# computeAndStore2dTo2dHistogram(curHits, int(numberBinsID/2), int(numberBinsT/2), filenameOutput, classValue, delimiter)
 
-"""
 
 
 
