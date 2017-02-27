@@ -8,3 +8,7 @@
 hdf5files
 .ipynb_checkpoints
 Untitled.ipynb
+h5ToHist.e*
+h5ToHist.o*
+submitSkripte/*h5ToHist.e*
+submitSkripte/*h5ToHist.o*
