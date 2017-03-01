@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import sys
 
+
 def filterPrimaryTracks(tracksFull):
         # only keep tracks from primary particles, implemented as only those with bjorken-y != 0.0
         return tracksFull[ np.where( tracksFull[:,0] != 0.0)[0] ]
