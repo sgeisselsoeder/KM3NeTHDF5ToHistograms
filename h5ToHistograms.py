@@ -21,7 +21,6 @@ def extractRelevantHitInfo(hits):
         return np.array( np.concatenate( [hits[:,14:15],hits[:,4:5],hits[:,0:1],hits[:,11:12]], axis=1), np.float32 )
         # return np.array( np.concatenate( [hits[:,7:8],hits[:,1:2],hits[:,0:1],hits[:,4:5]], axis=1), np.float32 ) # old numbering
 
-
 def convertHitsXYZ(hits, geo):
         # write the hits with xyz geometry
         temp = []
