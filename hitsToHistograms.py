@@ -1,6 +1,21 @@
 import numpy as np
 
-def compute4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT):
+# here we are. global variables. that is how low we can go these days. What have we become?!
+"""
+allClassValues = []
+all4dTo2dHistograms = []
+all4dTo4dHistograms = []
+all4dTo3dHistogramsXYZ = []
+all4dTo3dHistogramsXYT = []
+all4dTo3dHistogramsXZT = []
+all4dTo3dHistogramsYZT = []
+all4dTo3dHistogramsRZT = []
+
+allClassValues = []
+all2dTo2dHistograms = []
+"""
+
+def compute4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, all4dTo2dHistograms):
         # slice out the times of the current hits
         times = np.array(curHits[:,4], np.float32)
 
@@ -29,7 +44,7 @@ def compute4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numb
         store2dHistogramAsPGM(histYvsZ, "results/4dTo2d/yz/hist_"+filenameOutput+"_event"+str(eventID)+"_YvsZ.pgm")
         #"""
 
-def compute4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT):
+def compute4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, all4dTo3dHistogramsXYZ, all4dTo3dHistogramsXYT, all4dTo3dHistogramsXZT, all4dTo3dHistogramsYZT, all4dTo3dHistogramsRZT):
         histXYZ = np.histogramdd( np.array(curHits[:,1:4], np.float32), [numberBinsX, numberBinsY, numberBinsZ])
         histXYT = np.histogramdd( np.array(np.concatenate([curHits[:,1:3],curHits[:,4:5]], axis=1), np.float32), [numberBinsX, numberBinsY, numberBinsT])
         histXZT = np.histogramdd( np.array(np.concatenate([curHits[:,1:2],curHits[:,3:5]], axis=1), np.float32), [numberBinsX, numberBinsZ, numberBinsT])
@@ -50,16 +65,12 @@ def compute4dTo3dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numb
         all4dTo3dHistogramsYZT.append( histYZT[0] )
         all4dTo3dHistogramsRZT.append( histRZT[0] )
 
-def compute4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT):
+def compute4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, all4dTo4dHistograms):
         curHitsWithoutEventID = np.array(curHits[:,1:5], np.float32)
         histXYZT = np.histogramdd(curHitsWithoutEventID, [numberBinsX, numberBinsY, numberBinsZ, numberBinsT])
-
         all4dTo4dHistograms.append(histXYZT[0])
-        # TODO: also save all the 3d time series ... or do this at output level ...       
-        # store4dHistogramAsTimeSeriesOf3dHists( histXYZT, classValue, "results/4dTo3dTimeSeries/xyzTimeSeries/hist_"+filenameOutput+"_event"+str(eventID)+"_XYZ", delim)
 
-
-def compute2dTo2dHistogram(curHits, numberBinsID, numberBinsT):
+def compute2dTo2dHistogram(curHits, numberBinsID, numberBinsT, all2dTo2dHistograms):
         # slice out the OM ids of the current hits
         ids = np.array(curHits[:,1], np.int32)
 
