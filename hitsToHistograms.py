@@ -1,20 +1,5 @@
 import numpy as np
 
-# here we are. global variables. that is how low we can go these days. What have we become?!
-"""
-allClassValues = []
-all4dTo2dHistograms = []
-all4dTo4dHistograms = []
-all4dTo3dHistogramsXYZ = []
-all4dTo3dHistogramsXYT = []
-all4dTo3dHistogramsXZT = []
-all4dTo3dHistogramsYZT = []
-all4dTo3dHistogramsRZT = []
-
-allClassValues = []
-all2dTo2dHistograms = []
-"""
-
 def compute4dTo2dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, all4dTo2dHistograms):
         # slice out the times of the current hits
         times = np.array(curHits[:,4], np.float32)
