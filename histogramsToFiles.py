@@ -44,11 +44,14 @@ def store2dHistogramsAsCSV(classValues, hists, filename, delim = ","):
         # TODO: convert this to more efficient savetxt version
         histFile = open(filename, 'w')
         # loop over all histograms (= events)
-        #for hist,classVal in hists,classValues:
         for i in range(0,len(hists)):
             # write out one line per event
-            # write the class of this event first
-            histFile.write(str(int(classValues[i])) + delim)
+
+            # write the information from monte carlo for this event first
+	    for entry in classValues[i]:
+            	histFile.write(str(entry) + delim)
+		
+            #histFile.write(str(int(classValues[i])) + delim)
             # then write the data of this event
             for row in hists[i]:
                 for entry in row:
