@@ -18,8 +18,6 @@ def filterHitsForThisEvent(hits, eventID):
 
 
 
-
-
 if len(sys.argv) < 2 or str(sys.argv[1]) == "-h":
         print "Usage: python " + str(sys.argv[0]) + " file.h5"
         sys.exit(1)
@@ -38,9 +36,14 @@ numberBinsY = 11        # number of bins in y
 numberBinsZ = 18        # number of bins in z
 numberBinsID = 2070	# number of optical modules
 
-print "Generating histograms from the hits in XYZT format for files based on " + filename
-
+# Determine the class(es) for each event
 allClassValues = []
+for eventID in allEventNumbers:
+        allClassValues.append(getClassUpDown( tracks[int(eventID)] ))
+	# TODO: extend this to produce a vector instead of a value for each event, containing all (relevant) information on the event
+
+
+print "Generating histograms from the hits in XYZT format for files based on " + filename
 all4dTo2dHistograms = []
 all4dTo4dHistograms = []
 all4dTo3dHistogramsXYZ = []
@@ -49,15 +52,9 @@ all4dTo3dHistogramsXZT = []
 all4dTo3dHistogramsYZT = []
 all4dTo3dHistogramsRZT = []
 
-allClassValues = []
-all2dTo2dHistograms = []
-
 # Evaluate one event at a time
 # for eventID in [1,2]:
 for eventID in allEventNumbers:
-        # Determine the class of this event
-        allClassValues.append(getClassUpDown( tracks[int(eventID)] ))
-
         # filter all hits belonging to this event
         curHits = filterHitsForThisEvent(hitsXYZ, eventID)
 
@@ -69,7 +66,7 @@ for eventID in allEventNumbers:
 
         # do the 4d (same info as time series of 3d) histograms 
         # works but produces giant output files
-        compute4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, all4dTo4dHistograms)
+        # compute4dTo4dHistograms(curHits, numberBinsX, numberBinsY, numberBinsZ, numberBinsT, all4dTo4dHistograms)
 
 # """
 print "Storing 2d histograms from xyzt hits to results/4dTo2d/*/hist_"+filenameOutput+"_*.csv"
@@ -80,7 +77,6 @@ store2dHistogramsAsCSV(allClassValues, np.array(all4dTo2dHistograms)[:,3], "resu
 store2dHistogramsAsCSV(allClassValues, np.array(all4dTo2dHistograms)[:,4], "results/4dTo2d/xz/hist_"+filenameOutput+"_xz.csv")
 store2dHistogramsAsCSV(allClassValues, np.array(all4dTo2dHistograms)[:,5], "results/4dTo2d/yz/hist_"+filenameOutput+"_yz.csv")
 # """
-
 # """
 print "Storing 3d histograms from xyzt hits to results/4dTo3d/*/hist_"+filenameOutput+"_*.csv"
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsXYZ), "results/4dTo3d/xyz/hist_"+filenameOutput+"_xyz.csv")
@@ -89,22 +85,18 @@ store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsXZT), "result
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsYZT), "results/4dTo3d/yzt/hist_"+filenameOutput+"_yzt.csv")
 store3dHistogramsAsCSV(allClassValues, np.array(all4dTo3dHistogramsRZT), "results/4dTo3d/rzt/hist_"+filenameOutput+"_rzt.csv")
 # """
-
-# """
+"""
 print "Storing 4d histograms from xyzt hits to results/4dTo3d/xyzt/hist_"+filenameOutput+"_xyzt.csv"
 store4dHistogramsAsCSV(allClassValues, np.array(all4dTo4dHistograms), "results/4dTo4d/xyzt/hist_"+filenameOutput+"_xyzt.csv")
 # """
 
 
-
-# """
+"""
 print "Generating histograms from the hits in OMID versus time format for files based on " + filename
+all2dTo2dHistograms = []
 
 # Evaluate one event at a time
 for eventID in allEventNumbers:
-        # Determine the class of this event
-        allClassValues.append(getClassUpDown( tracks[int(eventID)] ))
-
         # filter all hits belonging to this event
         curHits = filterHitsForThisEvent(hits, eventID)
 
