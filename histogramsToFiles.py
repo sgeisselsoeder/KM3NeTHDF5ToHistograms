@@ -14,7 +14,7 @@ def store2dHistogramAsPGM(hist, filename):
                         histFile.write(str(int(entry)) + " ")
                 histFile.write("\n")
         histFile.close()
-
+"""
 def store2dHistogramAsCSV(hist, classValue, filename, delim = ","):
         #test = np.reshape( hist[0], (len(hist[0])*len(hist[0][0]),1) )
         #test2 = np.append(np.array([classValue,]), test)
@@ -29,15 +29,17 @@ def store4dHistogramAsCSV(hist, classValue, filename, delim = ","):
 
 def store3dHistogramSpliceAsCSV(hist, classValue, filename, delim = ","):
         np.savetxt(filename, np.append(np.array([classValue,]), np.reshape( hist, (len(hist)*len(hist[0])*len(hist[0][0]),1) ) )[np.newaxis], delimiter=delim, fmt='%d')
+"""
 
+"""
 def store4dHistogramAsTimeSeriesOf3dHists(hist, classValue, filenameBase, delim = ","):
         # len(hist[0][0][0][0]) = time bins     len(hist[0][0][0]) = z bins     len(hist[0][0]) = y bins        len(hist[0]) = x bins
         numberOfTimeBins = len(hist[0][0][0][0])
         for time in range(0,numberOfTimeBins):
                 filenameCurrent=filenameBase+"_"+str(time)+".csv"
                 store3dHistogramSpliceAsCSV(hist[0][:,:,:,time], classValue, filenameCurrent, delim)
+"""
 
-                
 def store2dHistogramsAsCSV(classValues, hists, filename, delim = ","):
         # TODO: convert this to more efficient savetxt version
         histFile = open(filename, 'w')
@@ -91,5 +93,4 @@ def store4dHistogramsAsCSV(classValues, hists, filename, delim = ","):
                             histFile.write(str(int(entry)) + delim)
             histFile.write("\n")
         histFile.close()
-
 
