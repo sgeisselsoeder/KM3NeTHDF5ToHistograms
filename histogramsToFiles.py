@@ -42,7 +42,7 @@ def store4dHistogramAsTimeSeriesOf3dHists(hist, classValue, filenameBase, delim 
 
 def store2dHistogramsAsBinary(classValues, hists, filename):
         # TODO: convert this to more efficient savetxt version
-        histFile = open(filename+".bin", 'bw')
+        histFile = open(filename+".bin", 'wb')
         # loop over all histograms (= events)
         for i in range(0,len(hists)):
             # write out one line per event
