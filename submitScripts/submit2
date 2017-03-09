@@ -1,15 +1,12 @@
 #!/bin/bash -l
 #PBS -l nodes=1:ppn=4,walltime=23:59:00
-#PBS -N anumu2_h5ToH
+#PBS -N convert26to50
 
 PROJECTPATH="/home/hpc/capn/mpp460/projects/km3netHdf5ToHistograms/"
 echo "PROJECTPATH: $PROJECTPATH"
 
 pip install --user pandas numpy
 
-cd ${PROJECTPATH}
-for i in {51..100}; do
-time python h5ToHistograms.py hdf5files/km3_v4_anumuCC_${i}.JTE_r2356.root.h5
-done
+doTheConversion26to50.sh
 
 exit 0

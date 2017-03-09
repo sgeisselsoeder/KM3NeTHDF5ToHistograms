@@ -14,3 +14,4 @@ submitSkripte/*h5ToHist.e*
 submitSkripte/*h5ToHist.o*
 *.tar.gz
 *.pyc
+*.nfs*
