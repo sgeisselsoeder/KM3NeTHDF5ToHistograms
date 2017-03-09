@@ -40,7 +40,7 @@ def store4dHistogramAsTimeSeriesOf3dHists(hist, classValue, filenameBase, delim 
                 store3dHistogramSpliceAsCSV(hist[0][:,:,:,time], classValue, filenameCurrent, delim)
 """
 
-def store2dHistogramsAsBinary(classValues, hists, filename):
+def store2dHistogramsAsBinary(mcinfos, hists, filename):
         # TODO: convert this to more efficient savetxt version
         histFile = open(filename+".bin", 'wb')
         # loop over all histograms (= events)
@@ -48,7 +48,7 @@ def store2dHistogramsAsBinary(classValues, hists, filename):
             # write out one line per event
 
             # write the information from monte carlo for this event first
-	    for entry in classValues[i]:
+	    for entry in mcinfos[i]:
             	histFile.write(entry)
 		
             # then write the data of this event
@@ -59,7 +59,7 @@ def store2dHistogramsAsBinary(classValues, hists, filename):
             histFile.write("\n")
         histFile.close()
  
-def store2dHistogramsAsCSV(classValues, hists, filename, delim = ","):
+def store2dHistogramsAsCSV(mcinfos, hists, filename, delim = ","):
         # TODO: convert this to more efficient savetxt version
         histFile = open(filename, 'w')
         # loop over all histograms (= events)
@@ -67,10 +67,9 @@ def store2dHistogramsAsCSV(classValues, hists, filename, delim = ","):
             # write out one line per event
 
             # write the information from monte carlo for this event first
-	    for entry in classValues[i]:
+	    for entry in mcinfos[i]:
             	histFile.write(str(entry) + delim)
 		
-            #histFile.write(str(int(classValues[i])) + delim)
             # then write the data of this event
             for row in hists[i]:
                 for entry in row:
@@ -79,15 +78,17 @@ def store2dHistogramsAsCSV(classValues, hists, filename, delim = ","):
             histFile.write("\n")
         histFile.close()
         
-def store3dHistogramsAsCSV(classValues, hists, filename, delim = ","):
+def store3dHistogramsAsCSV(mcinfos, hists, filename, delim = ","):
         # TODO: convert this to more efficient savetxt version
         histFile = open(filename, 'w')
         # loop over all histograms (= events)
-        #for hist,classVal in hists,classValues:
         for i in range(0,len(hists)):
             # write out one line per event
-            # write the class of this event first
-            histFile.write(str(int(classValues[i])) + delim)
+
+            # write the information from monte carlo for this event first
+	    for entry in mcinfos[i]:
+            	histFile.write(str(entry) + delim)
+
             # then write the data of this event
             for row in hists[i]:
                 for row2 in row:
@@ -97,15 +98,17 @@ def store3dHistogramsAsCSV(classValues, hists, filename, delim = ","):
             histFile.write("\n")
         histFile.close()
         
-def store4dHistogramsAsCSV(classValues, hists, filename, delim = ","):
+def store4dHistogramsAsCSV(mcinfos, hists, filename, delim = ","):
         # TODO: convert this to more efficient savetxt version
         histFile = open(filename, 'w')
         # loop over all histograms (= events)
-        #for hist,classVal in hists,classValues:
         for i in range(0,len(hists)):
             # write out one line per event
-            # write the class of this event first
-            histFile.write(str(int(classValues[i])) + delim)
+
+            # write the information from monte carlo for this event first
+	    for entry in mcinfos[i]:
+            	histFile.write(str(entry) + delim)
+
             # then write the data of this event
             for row in hists[i]:
                 for row2 in row:
