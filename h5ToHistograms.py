@@ -79,9 +79,9 @@ store2dHistogramsAsCSV(mcinfos, np.array(all4dTo2dHistograms)[:,0], "results/4dT
 store2dHistogramsAsCSV(mcinfos, np.array(all4dTo2dHistograms)[:,1], "results/4dTo2d/yt/hist_"+filenameOutput+"_yt.csv")
 store2dHistogramsAsCSV(mcinfos, np.array(all4dTo2dHistograms)[:,2], "results/4dTo2d/zt/hist_"+filenameOutput+"_zt.csv")
 store2dHistogramsAsCSV(mcinfos, np.array(all4dTo2dHistograms)[:,3], "results/4dTo2d/xy/hist_"+filenameOutput+"_xy.csv")
-#store2dHistogramsAsBinary(mcinfos, np.array(all4dTo2dHistograms)[:,3], "results/4dTo2d/xy/hist_"+filenameOutput+"_xy.csv")
 store2dHistogramsAsCSV(mcinfos, np.array(all4dTo2dHistograms)[:,4], "results/4dTo2d/xz/hist_"+filenameOutput+"_xz.csv")
 store2dHistogramsAsCSV(mcinfos, np.array(all4dTo2dHistograms)[:,5], "results/4dTo2d/yz/hist_"+filenameOutput+"_yz.csv")
+#store2dHistogramsAsBinary(mcinfos, np.array(all4dTo2dHistograms)[:,3], "results/4dTo2d/xy/hist_"+filenameOutput+"_xy.csv")
 # """
 #"""
 print "Storing 3d histograms from xyzt hits to results/4dTo3d/*/hist_"+filenameOutput+"_*.csv"
