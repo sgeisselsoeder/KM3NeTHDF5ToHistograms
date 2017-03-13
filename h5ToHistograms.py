@@ -38,6 +38,8 @@ numberBinsID = 2070	# number of optical modules
 
 # Determine the class(es) for each event, also keep the MC info for regression
 mcinfos = []
+# for every event write: number_mc_infos, event_id, particle_type, dir_x, dir_y, dir_z, energy, isCC, up/down 
+# index                          0            1           2          3       4     5       6      7     8
 for eventID in allEventNumbers:
 	mcinfo = np.reshape( track[int(eventID)], len( track[int(eventID)] ), 1 )	# usually this is sorted, but we go for the indices to make sure
 	updown = np.reshape( np.array(getClassUpDown(mcinfo)), 1,1)	# also add up/down binary class info (redundant with zenith, but simplifies later work)
