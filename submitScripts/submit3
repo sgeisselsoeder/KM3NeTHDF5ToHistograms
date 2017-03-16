@@ -7,6 +7,7 @@ echo "PROJECTPATH: $PROJECTPATH"
 
 pip install --user pandas numpy
 
-doTheConversion51to75.sh
+cd ${PROJECTPATH}
+time ./doTheConversion51to75.sh
 
 exit 0

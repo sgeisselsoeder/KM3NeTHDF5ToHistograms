@@ -10,8 +10,9 @@ hdf5files
 Untitled.ipynb
 h5ToHist.e*
 h5ToHist.o*
-submitSkripte/*h5ToHist.e*
-submitSkripte/*h5ToHist.o*
+submitScripts/convert*.e*
+submitScripts/convert*.o*
+submitScripts/logs
 *.tar.gz
 *.pyc
 *.nfs*

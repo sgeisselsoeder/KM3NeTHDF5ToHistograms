@@ -6,7 +6,10 @@ PROJECTPATH="/home/hpc/capn/mpp460/projects/km3netHdf5ToHistograms/"
 echo "PROJECTPATH: $PROJECTPATH"
 
 pip install --user pandas numpy
+pwd
+cd ${PROJECTPATH}
+pwd
 
-doTheConversion1to25.sh
+time ./doTheConversion1to25.sh
 
 exit 0

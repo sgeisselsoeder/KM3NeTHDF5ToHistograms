@@ -1,3 +1,4 @@
 #!/bin/bash
 for i in {xt,yt,zt,xy,xz,yz} ; do echo $i && cat 4dTo2d/${i}/*numuCC_*.csv >> numu${i}.ssv ; sed 's/,*$//' numu${i}.ssv > numu${i}.csv ; rm numu${i}.ssv ; done
-echo omidt && cat 2dTo2d/omIDt/*numuCC_*.csv >> numuomidt.ssv ; sed 's/,*$//' numuomidt.ssv > numuomidt.csv ; rm numuomidt.ssv
+for i in {xyz,xyt,xzt,yzt,rzt} ; do echo $i && cat 4dTo3d/${i}/*numuCC_*.csv >> numu${i}.ssv ; sed 's/,*$//' numu${i}.ssv > numu${i}.csv ; rm numu${i}.ssv ; done
+echo xyzt && cat 4dTo4d/xyzt/*numuCC_*.csv >> numuxyzt.ssv ; sed 's/,*$//' numuxyzt.ssv > numuxyzt.csv ; rm numuxyzt.ssv
