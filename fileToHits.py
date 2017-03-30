@@ -7,8 +7,8 @@ def filterPrimaryTracks(tracksFull):
         return tracksFull[ np.where( tracksFull[:,0] != 0.0)[0] ]
 
 def extractRelevantTrackInfo(tracks):
-        # keep the relevant info from the track: event_id particle_type dir_x dir_y dir_z energy isCC 
-        return np.array( np.concatenate( [tracks[:,14:15],tracks[:,13:14],tracks[:,1:5],tracks[:,7:8]], axis=1), np.float32 )
+        # keep the relevant info from the track: event_id particle_type dir_x dir_y dir_z energy isCC bjorkeny
+        return np.array( np.concatenate( [ tracks[:,14:15],tracks[:,13:14],tracks[:,1:5],tracks[:,7:8],tracks[:,0:1] ], axis=1), np.float32 )
 
 def filterTriggeredHits(hits):
         # only keep triggered hits
