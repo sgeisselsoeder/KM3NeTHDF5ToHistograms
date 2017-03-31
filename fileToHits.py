@@ -3,7 +3,12 @@ import numpy as np
 import sys
 
 def filterPrimaryTracks(tracksFull):
-        # only keep tracks from primary particles, implemented as only those with bjorken-y != 0.0
+        # only keep tracks from primary particles, implemented as only those with bjorkeny != 0.0
+        # tracksFull = tracksFull[0:10]
+        # print tracksFull
+        #temp = tracksFull[ np.where( tracksFull[:,0] != 0.0)[0] ]
+	#np.set_printoptions(precision=2, threshold=np.inf)
+	#print temp[:,0]
         return tracksFull[ np.where( tracksFull[:,0] != 0.0)[0] ]
 
 def extractRelevantTrackInfo(tracks):
@@ -40,6 +45,8 @@ def parseFile(filename, filenameGeometry):
 	tracksPrimary = filterPrimaryTracks(tracksFull)
 	print "Filtering relevant info for each track"
 	tracks = extractRelevantTrackInfo(tracksPrimary)
+	np.set_printoptions(precision=2, threshold=np.inf)
+	#print tracks[:,7]
 
 	print "Reading hits"
 	hits = extractRelevantHitInfo( np.array( pd.read_hdf(filename, 'hits') ) )
