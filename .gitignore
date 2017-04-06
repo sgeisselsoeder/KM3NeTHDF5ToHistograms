@@ -16,3 +16,5 @@ submitScripts/logs
 *.tar.gz
 *.pyc
 *.nfs*
+results/*[Ss]plit*
+
