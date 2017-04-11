@@ -30,7 +30,7 @@ track, hits, hitsXYZ = parseFile(filename, filenameGeometry)
 allEventNumbers = set(hits[:,0])
 
 # Start output related work here
-numberBinsT = 100       # number of bins in time
+numberBinsT = 50       # number of bins in time
 numberBinsX = 11        # number of bins in x
 numberBinsY = 11        # number of bins in y
 numberBinsZ = 18        # number of bins in z
