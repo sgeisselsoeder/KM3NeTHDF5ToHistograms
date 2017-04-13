@@ -1,4 +1,5 @@
 #!/bin/bash
+mv convert*to*.[eo]* logs/
 for i in {1..4}
 do
 echo $i
