@@ -42,9 +42,6 @@ def readDataFromFile(filename):
 
 import sys
 
-# print 'Number of arguments:', len(sys.argv), 'arguments.'
-# print 'Argument List:', str(sys.argv)
-
 filename = ""
 if len(sys.argv) > 1:
     filename = sys.argv[1]
@@ -66,18 +63,6 @@ f.close()
 f = h5py.File(filename+"_gz1.h5", 'w')
 f.create_dataset('x', data=x, compression="gzip", compression_opts=1)
 f.create_dataset('y', data=y, compression="gzip", compression_opts=1)
-f.close()
-
-#Create HDF5 file gzip
-f = h5py.File(filename+"_gz9.h5", 'w')
-f.create_dataset('x', data=x, compression="gzip", compression_opts=9)
-f.create_dataset('y', data=y, compression="gzip", compression_opts=9)
-f.close()
-
-#Create HDF5 file lzf
-f = h5py.File(filename+"_lzf.h5", 'w')
-f.create_dataset('x', data=x, compression="lzf")
-f.create_dataset('y', data=y, compression="lzf")
 f.close()
 """
 
