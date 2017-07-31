@@ -57,12 +57,3 @@ f.create_dataset('x', data=x)
 f.create_dataset('y', data=y)
 f.close()
 
-"""
-# these do not speed up the training!
-#Create HDF5 file gzip
-f = h5py.File(filename+"_gz1.h5", 'w')
-f.create_dataset('x', data=x, compression="gzip", compression_opts=1)
-f.create_dataset('y', data=y, compression="gzip", compression_opts=1)
-f.close()
-"""
-
