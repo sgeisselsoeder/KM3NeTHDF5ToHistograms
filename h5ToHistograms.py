@@ -29,6 +29,9 @@ track, hits, hitsXYZ = parseFile(filename, filenameGeometry)
 # trackInfo contains the relevant info on the events: event_id particle_type dir_x dir_y dir_z energy isCC 
 allEventNumbers = set(hits[:,0])
 
+
+
+
 # Start output related work here
 numberBinsT = 50       # number of bins in time
 numberBinsX = 11        # number of bins in x
@@ -49,11 +52,7 @@ for eventID in allEventNumbers:
 
 
 
-do2d = False
-do3d = False
-do4d = False
 doOmidt = False
-
 do2d = True
 do3d = True
 do4d = True
@@ -67,6 +66,8 @@ all4dTo3dHistogramsXYT = []
 all4dTo3dHistogramsXZT = []
 all4dTo3dHistogramsYZT = []
 all4dTo3dHistogramsRZT = []
+
+
 
 # Evaluate one event at a time
 # for eventID in [1,2]:
